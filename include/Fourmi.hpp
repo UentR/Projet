@@ -37,6 +37,7 @@ class Fourmi {
         void soigner();
         void fourmiProche() const;
 
+        Fourmi(Coord c, int Idx);
         Fourmi();
 
 };
@@ -48,7 +49,7 @@ class Guerriere : public Fourmi {
     public:
         void actionGuerriere();
     
-        Guerriere(Coord c, int Idx);
+        Guerriere(Coord c, int Idx);                            // Done
 };
 
 class Ouvriere : public Fourmi {
@@ -59,7 +60,7 @@ class Ouvriere : public Fourmi {
         void fuir();
         void actionOuvriere();
 
-        Ouvriere(Coord c, int Idx);
+        Ouvriere(Coord c, int Idx);                             // Done
 };
 
 class Reproductrice : public Fourmi {
@@ -73,7 +74,8 @@ class Reproductrice : public Fourmi {
         void Reproduire();
         
         void actionRepoductrice();
-        Reproductrice(Coord c, int ix);
+        
+        Reproductrice(Coord c, int Idx);                        // Done
 };
 
 
@@ -101,13 +103,16 @@ class Colonie {
         Coord position;
 
     public:
-        int getNbFourmis() const;
-        int getIdx() const;
-        Coord getPosition() const;
-        vector<Fourmi> fourmis;
         int quantiteSucre;
+        vector<Fourmi> fourmis;
 
-        int produireFourmis();
+        int getNbFourmis() const;                               // Done
+        int getIdx() const;                                     // Done
+        Coord getPosition() const;                              // Done
+        int produireFourmis();                                  // Done
 
-        Colonie(Coord c);
+        Colonie(Coord c);                                       // Done
 };
+
+ostream &operator<<(ostream &out, Fourmi f);
+ostream &operator<<(ostream &out, Colonie c);

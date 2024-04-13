@@ -13,8 +13,11 @@ class Coord{
 
     public:
         Coord(int a, int b);
+        Coord();
     
         bool setCoord(int a, int b);
         int getLigne() const;
         int getColonne() const;
 };
+
+ostream &operator<<(ostream &out, Coord c);

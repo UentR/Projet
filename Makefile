@@ -2,7 +2,7 @@
 
 CXX = g++
 # CXXFLAGS = -W -Wall -std=c++11 -O2 -g -Wno-sign-compare -Wno-narrowing
-CXXFLAGS = -O2 -w -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
+CXXFLAGS = -O2 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
 OBJDIR = object
 INCDIR = include
 vpath %.cpp src
@@ -14,6 +14,9 @@ dependDebug = $(addprefix $(INCDIR)/, Debug.hpp)
 
 objectCoord = $(addprefix $(OBJDIR)/, Coord.o )
 includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
+
+objectTerrain = $(addprefix $(OBJDIR)/, Terrain.o )
+includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
 
 objects = $(addprefix $(OBJDIR)/, Fourmi.o )
 depend = $(addprefix $(INCDIR)/, Fourmi.hpp )
@@ -33,7 +36,13 @@ Coord: $(objectCoord) $(includeCoord)
 	@$(CXX) $(CXXFLAGS) $^ -o Coord
 	@echo "Compilation Coord terminée"
 
-Fourmi: $(objects) $(debug) $(jeu)
+
+Terrain: $(objectTerrain) $(includeTerrain)
+	@$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Compilation terrain terminée"
+
+
+Fourmi: $(objects) $(debug) $(jeu) $(objectCoord) $(includeCoord)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
 
