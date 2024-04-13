@@ -42,18 +42,18 @@ bool operator!=(Coord c1, Coord c2){
     return !(c1 == c2);
 }
 
-// int main() {
-//     Coord c{1, 2};
-//     Coord c_{1,2};
-//     Coord not_c{2,1};
-//     cout<< c << endl;
-//     bool test = c == c_; 
-//     cout << test << "corr : true" << endl;
-//     test = c == not_c;
-//     cout << test << "corr : false" << endl;
-//     test = c != c_;
-//     cout << test << "corr : false" << endl;
-//     test = c != not_c;
-//     cout << test << "corr : true" << endl;
-//     return 0;
-// }
+int main() {
+    Coord c{1, 2};
+    Coord c_{1,2};
+    Coord not_c{2,1};
+    cout<< c << endl;
+    bool test = c == c_; 
+    cout << test << " corr : true" << endl;
+    test = c == not_c;
+    cout << test << " corr : false" << endl;
+    test = c != c_;
+    cout << test << " corr : false" << endl;
+    test = c != not_c;
+    cout << test << " corr : true" << endl;
+    return 0;
+}

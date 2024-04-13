@@ -12,6 +12,9 @@ PROGS=Fourmi
 debug = $(addprefix $(OBJDIR)/, Debug.o)
 dependDebug = $(addprefix $(INCDIR)/, Debug.hpp)
 
+objectCoord = $(addprefix $(OBJDIR)/, Coord.o )
+includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
+
 objects = $(addprefix $(OBJDIR)/, Fourmi.o )
 depend = $(addprefix $(INCDIR)/, Fourmi.hpp )
 
@@ -26,8 +29,8 @@ all: $(PROGS)
 clean:
 	rm -rf $(OBJDIR)/*.o $(PROGS)
 
-Coord: Coord.hpp Coord.o
-	@$(CXX) $(CXXFLAGS) Coord.o -o Coord
+Coord: $(objectCoord) $(includeCoord)
+	@$(CXX) $(CXXFLAGS) $^ -o Coord
 	@echo "Compilation Coord terminée"
 
 Fourmi: $(objects) $(debug) $(jeu)
