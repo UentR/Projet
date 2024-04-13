@@ -1,13 +1,24 @@
 #include <array>
 #include "Fourmi.hpp"
 #include <map>
+#include <cstdlib>
+#include <ctime>
+
 
 using namespace std;
+
+
+#define HWall 0.1
+#define HEmpty 0
+#define HSugar 0.8
+#define HNest 1
+
+
 
 class Cell {
     public:
         map<int, int> pheromones;
-        unsigned int state;                  // 6 premier bits = colonie correspondante / 2 derniers = state 
+        unsigned short int state;                     // 6 premier bits = colonie correspondante / 2 derniers = state 
         vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
         int sugarAmount;
 
@@ -31,6 +42,23 @@ class Terrain {
     private:
         const int width;
         const int height;
+
+        const string UpLeftC = "\U00002510";
+        const string UpRightC = "\U0000250C";
+        const string DownLeftC = "\U00002518";
+        const string DownRightC = "\U00002514";
+
+        const string Vertical = "\U00002502";
+        const string Horizontal = "\U00002015";
+
+        const string Cross = "\U0000253C";
+
+        const string TLeft = "\U0000251C";
+        const string TUp = "\U0000252C";
+        const string TRight = "\U00002524";
+        const string TDown = "\U00002534";
+
+        const string Full = "\U00002588";
         
     
     public:

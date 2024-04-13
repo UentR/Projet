@@ -16,7 +16,7 @@ objectCoord = $(addprefix $(OBJDIR)/, Coord.o )
 includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
 
 objectTerrain = $(addprefix $(OBJDIR)/, Terrain.o )
-includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
+includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp db_perlin.hpp)
 
 objects = $(addprefix $(OBJDIR)/, Fourmi.o )
 depend = $(addprefix $(INCDIR)/, Fourmi.hpp )

@@ -30,10 +30,38 @@ ostream &operator<<(ostream &out, Terrain t) {
 
 Cell::Cell(int Sugar, int State) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{} {}
 
+#define DB_PERLIN_IMPL
+#include "db_perlin.hpp"
+
 Terrain::Terrain(int w, int h) : width{w}, height{h} {
+    srand(time(0));
     Cells = {};
+    int state;
+    int PerlinNoise;
+    int Sugar;
+    int *C;
     for (int i=0; i<w*h; i++) {
-        Cell c{0, 0};
+        C = toCoord(i);
+        Sugar = 0;
+        
+        PerlinNoise = rand()%100;
+
+        // float PerlinNoise = (db::perlin(float(C[0])/w, float(C[1])/h) + 1)/2;
+        if (PerlinNoise < 5) {
+            state = 3;
+        } else if (PerlinNoise < 93) {
+            state = 2 + ((int)(PerlinNoise*64) << 2);
+            state = 2;
+        } else if (PerlinNoise < 99) {
+            state = 1;
+            Sugar = 100;
+        } else {
+            state = 0;
+        }
+
+        
+
+        Cell c{Sugar, state};
         Cells.push_back(c);
     }
 }
@@ -94,47 +122,54 @@ void repeatChar(int Nbr, char c) {
     }
 }
 
+void repeatChar(int Nbr, string c) {
+    for (int i=0; i<Nbr; i++) {
+        cout << c;
+    }
+}
+
 void Terrain::toText() const {
-    int LineSize = 2*width - 1;
-    cout << " ";
-    repeatChar(LineSize, '-');
-    cout << endl;
+    int LineSize = width;
+    cout << UpRightC;
+    repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TUp);
+    cout << Horizontal+Horizontal+Horizontal+UpLeftC;
 
     int Idx=0;
     Cell Current{0, 0};
     for (int y=0; y<height; y++) {
-        cout << "|";
+        cout << endl << Vertical;
         for (int x=0; x<width; x++) {
             Current = Cells[Idx];
             if (Current.containsAnt()) {
-                cout << "F";
+                cout << " F ";
             } else if (Current.containsNest()) {
-                cout << "N";
+                cout << " N ";
             } else if (Current.containsSugar()) {
-                cout << "S";
+                cout << " S ";
             } else {
-                cout << " ";
+                cout << "   ";
             }
-            cout << "|";
+            cout << Vertical;
             Idx++;
         }
-        cout << endl << " ";
-        repeatChar(LineSize, '-');
         cout << endl;
+        cout << TLeft;
+        repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+Cross);
+        cout << Horizontal+Horizontal+Horizontal+TRight;
     }
+    cout << '\r';
+    cout << DownRightC;
+    repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TDown);
+    cout << Horizontal+Horizontal+Horizontal+DownLeftC << endl;
 }
-
-
-
 
 
 int main() {
     Cell c{0, 0};
     cout << c << endl;
-    Terrain t{10, 10};
-    cout << t << endl;
+    Terrain t{44, 25};
+    // cout << t << endl;
 
     t.toText();
-
     return 0;
 }
