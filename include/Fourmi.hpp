@@ -2,20 +2,9 @@
 #include "Debug.hpp"
 #include <vector>
 #include "Coord.hpp"
+#include "BaseVariables.hpp"
 
 using namespace std;
-
-#define VieO 10
-#define VieG 15
-#define VieR 10
-
-#define AttaqueO 3
-#define AttaqueG 6
-#define AttaqueR 2
-
-#define CapaciteSO 5
-#define CapaciteSG 10
-#define CapaciteSR 5
 
 class Fourmi {
     public:
@@ -79,35 +68,23 @@ class Reproductrice : public Fourmi {
 };
 
 
-#define PourcentO 0.75
-#define PourcentG 0.15
-#define PourcentR 0.10
-
-// define array with all the pourcentages
-array<float, 3> PourcentF = {PourcentO, PourcentG, PourcentR};
-
-#define NBO 15
-#define NBG 3
-#define NBR 2
-
-array<int, 3> NbF = {NBO, NBG, NBR};
-
 // ind : 0 = ouvriere ; 1 = guerriere  ; 2 reproductrice
 
 class Colonie {
     private:
-        int Idx;
+        
         int nbFourmis;
         array<int, 3> typeFourmis;
         int reproducticeEnAttente;
         Coord position;
 
     public:
+        int Idx;
         int quantiteSucre;
         vector<Fourmi> fourmis;
 
         int getNbFourmis() const;                               // Done
-        int getIdx() const;                                     // Done
+        int getIdx();                                           // Done
         Coord getPosition() const;                              // Done
         int produireFourmis();                                  // Done
 

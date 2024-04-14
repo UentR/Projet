@@ -2,7 +2,7 @@
 
 CXX = g++
 # CXXFLAGS = -W -Wall -std=c++11 -O2 -g -Wno-sign-compare -Wno-narrowing
-CXXFLAGS = -O2 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
+CXXFLAGS = -W -O2 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
 OBJDIR = object
 INCDIR = include
 vpath %.cpp src
@@ -16,10 +16,10 @@ objectCoord = $(addprefix $(OBJDIR)/, Coord.o )
 includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
 
 objectTerrain = $(addprefix $(OBJDIR)/, Terrain.o )
-includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp db_perlin.hpp)
+includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
 
-objects = $(addprefix $(OBJDIR)/, Fourmi.o )
-depend = $(addprefix $(INCDIR)/, Fourmi.hpp )
+objects = $(addprefix $(OBJDIR)/, Fourmi.o BaseVariables.o)
+depend = $(addprefix $(INCDIR)/, Fourmi.hpp BaseVariables.hpp)
 
 jeu = $(addprefix $(OBJDIR)/,  )
 jeudepend = $(addprefix $(INCDIR)/, )
@@ -32,17 +32,16 @@ all: $(PROGS)
 clean:
 	rm -rf $(OBJDIR)/*.o $(PROGS)
 
-Coord: $(objectCoord) $(includeCoord)
+Coord: $(includeCoord) $(objectCoord)
 	@$(CXX) $(CXXFLAGS) $^ -o Coord
 	@echo "Compilation Coord terminée"
 
 
-Terrain: $(objectTerrain) $(includeTerrain)
+Terrain: $(includeCoord) $(objectCoord) $(dependDebug) $(debug) $(depend) $(object) $(includeTerrain) $(objectTerrain)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation terrain terminée"
 
-
-Fourmi: $(objects) $(debug) $(jeu) $(objectCoord) $(includeCoord)
+Fourmi: $(dependDebug) $(debug) $(includeCoord) $(objectCoord) $(depend) $(objects)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
 

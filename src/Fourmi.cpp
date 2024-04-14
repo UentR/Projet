@@ -2,6 +2,8 @@
 #include <iostream>
 #include <string>
 
+// #include "BaseVariables.hpp"
+
 using namespace std;
 
 // cout
@@ -110,7 +112,7 @@ int Colonie::getNbFourmis() const {
     return nbFourmis;
 }
 
-int Colonie::getIdx() const {
+int Colonie::getIdx() {
     return Idx;
 }
 
@@ -119,10 +121,9 @@ Coord Colonie::getPosition() const {
 }
 
 
-// 
-
-
-bool mettrePheromone() {}
+bool mettrePheromone() {
+    return false;
+}
 
 int main() {
     Coord c{0, 1};

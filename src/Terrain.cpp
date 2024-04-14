@@ -28,10 +28,10 @@ ostream &operator<<(ostream &out, Terrain t) {
 
 // Constructeur 
 
-Cell::Cell(int Sugar, int State) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{} {}
+Cell::Cell(int Sugar, int State, int Height) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{Height} {}
 
-#define DB_PERLIN_IMPL
-#include "db_perlin.hpp"
+Cell::Cell() : sugarAmount{0}, state{2}, toAnt{}, pheromones{}, height{0} {}
+
 
 Terrain::Terrain(int w, int h) : width{w}, height{h} {
     srand(time(0));
@@ -39,12 +39,14 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
     int state;
     int PerlinNoise;
     int Sugar;
+    int H;
     int *C;
     for (int i=0; i<w*h; i++) {
         C = toCoord(i);
         Sugar = 0;
         
         PerlinNoise = rand()%100;
+        H = rand()%20;
 
         // float PerlinNoise = (db::perlin(float(C[0])/w, float(C[1])/h) + 1)/2;
         if (PerlinNoise < 5) {
@@ -58,10 +60,7 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
         } else {
             state = 0;
         }
-
-        
-
-        Cell c{Sugar, state};
+        Cell c{Sugar, state, H};
         Cells.push_back(c);
     }
 }
@@ -84,6 +83,31 @@ int *Terrain::toCoord(int Idx) const {
     return Coord;
 }
 
+// Methode Cell
+
+void Cell::update() {
+    for (auto const& [key, val] : pheromones) {
+        int newValue = val - REMOVEPHEROMONES;
+        if (newValue <= 0) {
+            pheromones.erase(key);
+        } else {
+            pheromones[key] = newValue;
+        }
+    }
+}
+
+int Cell::removeSugar(int Amount) {
+    int newValue = sugarAmount - Amount;
+    if (newValue <= 0) {
+        state = 2;
+        return sugarAmount;
+    } else {
+        sugarAmount = newValue;
+        return Amount;
+    }
+}
+
+
 // Methode state cell
 
 bool Cell::containsSugar() const {
@@ -98,6 +122,10 @@ bool Cell::containsNest(int Idx) const {
     return (state>>2) == Idx;
 }
 
+// bool Cell::containsNest(Colonie c) const {
+//     return (state>>2) == c.Idx;
+// }
+
 bool Cell::containsPheromone() const {
     for (auto const& [key, val] : pheromones) {
         return true;
@@ -111,6 +139,10 @@ bool Cell::containsPheromone(int a) const {
 
 bool Cell::containsAnt() const {
     return toAnt.size() != 0;
+}
+
+bool Cell::containsWall() const {
+    return state == 3;
 }
 
 
@@ -135,21 +167,24 @@ void Terrain::toText() const {
     cout << Horizontal+Horizontal+Horizontal+UpLeftC;
 
     int Idx=0;
-    Cell Current{0, 0};
+    Cell Current;
     for (int y=0; y<height; y++) {
         cout << endl << Vertical;
         for (int x=0; x<width; x++) {
             Current = Cells[Idx];
             if (Current.containsAnt()) {
-                cout << " F ";
+                cout << " " << Triangle << " ";
             } else if (Current.containsNest()) {
-                cout << " N ";
+                cout << " " << Carre << " ";
             } else if (Current.containsSugar()) {
-                cout << " S ";
+                cout << " " << Circle << " ";
+            } else if (Current.containsWall()) {
+                cout << Full << Full << Full;
             } else {
                 cout << "   ";
             }
             cout << Vertical;
+            
             Idx++;
         }
         cout << endl;
@@ -165,7 +200,7 @@ void Terrain::toText() const {
 
 
 int main() {
-    Cell c{0, 0};
+    Cell c{0, 0, 0};
     cout << c << endl;
     Terrain t{44, 25};
     // cout << t << endl;
