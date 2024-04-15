@@ -28,7 +28,6 @@ bool operator!=(Coord c1, Coord c2);
 
 struct EnsembleCoord{
     private:
-        int taille;
         vector<Coord>(taille) Grille;
         int position(Coord objet);
     public:
@@ -36,6 +35,9 @@ struct EnsembleCoord{
         bool contient(Coord objet);
         void ajoute(Coord objet);
         void supprime(Coord objet);
+        bool estVide();
+        int taille();
+        Coord ieme(int n);
 };
 
 ostream &operator<<(ostream &out, EnsembleCoord);
