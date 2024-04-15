@@ -52,7 +52,7 @@ ostream &operator<<(ostream &out; EnsembleCoord tab){
     return out;
 }
 
-int EnsembleCoord::position(Coord objet){
+int EnsembleCoord::position(Coord objet) const{
     for (int i=0;i<Grille.size();i++){
         if (Grille[i] == objet){
             return i;
@@ -61,7 +61,7 @@ int EnsembleCoord::position(Coord objet){
     return -1;
 }
 
-bool EnsembleCoord::contient(Coord objet){
+bool EnsembleCoord::contient(Coord objet) const{
     if (position(objet) != -1){
         return true;
     }
@@ -82,15 +82,15 @@ void EnsembleCoord::supprime(Coord objet){
     }
 }
 
-bool EnsembleCoord::estVide(){
+bool EnsembleCoord::estVide() const{
     return Grille.size() == 0;
 }
 
-int taille(){
+int taille()const{
     return Grille.size();
 }
 
-Coord EnsembleCoord::ieme(int n){
+Coord EnsembleCoord::ieme(int n) const{
     return Grille[n];
 }
 
