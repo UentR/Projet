@@ -30,9 +30,12 @@ struct EnsembleCoord{
     private:
         int taille;
         vector<Coord>(taille) Grille;
-        EnsembleCoord position(Coord objet);
+        int position(Coord objet);
     public:
         EnsembleCoord(vector<Coord>);
+        bool contient(Coord objet);
+        void ajoute(Coord objet);
+        void supprime(Coord objet);
 };
 
 ostream &operator<<(ostream &out, EnsembleCoord);
