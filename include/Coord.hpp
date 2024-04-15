@@ -21,3 +21,15 @@ class Coord{
 };
 
 ostream &operator<<(ostream &out, Coord c);
+
+bool operator==(Coord c1, Coord c2);
+
+bool operator!=(Coord c1, Coord c2);
+
+struct EnsembleCoord{
+    int taille;
+    vector<Coord>(taille) Grille;
+    EnsembleCoord(vector<Coord>);
+};
+
+ostream &operator<<(ostream &out, EnsembleCoord);
