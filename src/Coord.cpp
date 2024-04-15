@@ -45,7 +45,7 @@ bool operator!=(Coord c1, Coord c2){
 
 
 ostream &operator<<(ostream &out; EnsembleCoord tab){
-    for (int i=0; i<tab.taille;i+++){
+    for (int i=0; i<tab.Grille.size();i+++){
         out << tab[i] << " " ;
     }
     out << endl;
@@ -53,7 +53,7 @@ ostream &operator<<(ostream &out; EnsembleCoord tab){
 }
 
 int EnsembleCoord::position(Coord objet){
-    for (int i=0;i<taille;i++){
+    for (int i=0;i<Grille.size();i++){
         if (Grille[i] == objet){
             return i;
         }
@@ -72,16 +72,26 @@ void EnsembleCoord::ajoute(Coord objet){
     if (!contient(objet)){
         Grille.push_back(objet);
     }
-    taille += 1;
 }
 
 void EnsembleCoord::supprime(Coord objet){
     if (contient(objet)){
         Grille.pop_back(objet);
-        taille -= 1;
     }else{
         throw invalid_argument("Cette coordonnee n'est pas dans la grille");
     }
+}
+
+bool EnsembleCoord::estVide(){
+    return Grille.size() == 0;
+}
+
+int taille(){
+    return Grille.size();
+}
+
+Coord EnsembleCoord::ieme(int n){
+    return Grille[n];
 }
 
 // int main() {
