@@ -52,6 +52,38 @@ ostream &operator<<(ostream &out; EnsembleCoord tab){
     return out;
 }
 
+int EnsembleCoord::position(Coord objet){
+    for (int i=0;i<taille;i++){
+        if (Grille[i] == objet){
+            return i;
+        }
+    }
+    return -1;
+}
+
+bool EnsembleCoord::contient(Coord objet){
+    if (position(objet) != -1){
+        return true;
+    }
+    return false;
+}
+
+void EnsembleCoord::ajoute(Coord objet){
+    if (!contient(objet)){
+        Grille.push_back(objet);
+    }
+    taille += 1;
+}
+
+void EnsembleCoord::supprime(Coord objet){
+    if (contient(objet)){
+        Grille.pop_back(objet);
+        taille -= 1;
+    }else{
+        throw invalid_argument("Cette coordonnee n'est pas dans la grille");
+    }
+}
+
 // int main() {
 //     Coord c{1, 2};
 //     Coord c_{1,2};
