@@ -43,6 +43,15 @@ bool operator!=(Coord c1, Coord c2){
     return !(c1 == c2);
 }
 
+
+ostream &operator<<(ostream &out; EnsembleCoord tab){
+    for (int i=0; i<tab.taille;i+++){
+        out << tab[i] << " " ;
+    }
+    out << endl;
+    return out;
+}
+
 // int main() {
 //     Coord c{1, 2};
 //     Coord c_{1,2};
