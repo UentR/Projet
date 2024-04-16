@@ -28,7 +28,9 @@ ostream &operator<<(ostream &out, Terrain t) {
 
 // Constructeur 
 
-Cell::Cell(int Sugar, int State, int Height) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{Height} {}
+Cell::Cell(int Sugar, int State, int Height) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{Height}, nestAbove{nullptr} {}
+
+Cell::Cell(int Sugar, int State, Colonie *ptrCol) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{0}, nestAbove{ptrCol} {}
 
 Cell::Cell() : sugarAmount{0}, state{2}, toAnt{}, pheromones{}, height{0} {}
 
@@ -120,6 +122,7 @@ bool Cell::containsSugar() const {
 
 bool Cell::containsNest() const {
     return (state%4) == 0;
+    // return nestAbove != nullptr;
 }
 
 bool Cell::containsNest(int Idx) const {
@@ -137,8 +140,17 @@ bool Cell::containsPheromone() const {
     return false;
 }
 
-bool Cell::containsPheromone(int a) const {
+bool Cell::containsPheromone(unsigned int a) const {
     return pheromones.count(a) != 0;
+}
+
+bool Cell::containsPheromone(int a) const {
+    for (auto const& [key, val] : pheromones) {
+        if (key != a) {
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Cell::containsAnt() const {

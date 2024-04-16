@@ -30,6 +30,21 @@ bool Coord::setCoord(int a, int b){
     
     return true; 
 }
+
+vector<Coord> voisin(int Rayon) const{
+    vector<Coord> voisins;
+    for (int i = -Rayon; i < Rayon; i++){
+        for (int j = -Rayon; j < Rayon; j++){
+            if (i != 0 or j != 0){
+                Coord c{ind_lig + i, ind_col + j};
+                voisins.push_back(c);
+            }
+        }
+    }
+    return voisins;
+}
+
+
 ostream &operator<<(ostream &out , Coord coordo) {
     out << coordo.getLigne() << " " << coordo.getColonne();
     return out;

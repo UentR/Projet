@@ -24,6 +24,7 @@ class Cell {
         unsigned short int state;               // 6 premier bits = colonie correspondante / 2 derniers = state 
         vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
         int sugarAmount;
+        Colonie *nestAbove;
 
         bool containsSugar() const;             // Done
         bool containsNest() const;              // Done
@@ -31,6 +32,7 @@ class Cell {
         bool containsNest(int Idx) const;       // Done
         bool containsWall() const;              // Done
         bool isEmpty() const;                   //
+        bool containsPheromone(unsigned int a) const; // Done
         bool containsPheromone(int a) const;    // Done
         bool containsPheromone() const;         // Done
         bool containsAnt() const;               // Done

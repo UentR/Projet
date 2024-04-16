@@ -18,6 +18,8 @@ class Coord{
         bool setCoord(int a, int b);
         int getLigne() const;
         int getColonne() const;
+
+        vector<Coord> voisin(int Rayon) const;
 };
 
 ostream &operator<<(ostream &out, Coord c);
