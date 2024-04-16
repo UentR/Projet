@@ -279,7 +279,7 @@ void Guerriere::actionGuerriere(Terrain t) {
     }
 }
 
-void Ouveriere::fuir() {
+void Ouvriere::fuir() {
     vector<Coord> voisins = position.voisin(vision);
     for (Coord c : voisins) {
         if (c.isEmpty()) {
@@ -309,7 +309,7 @@ bool Reproductrice::checkReproduction() {
 
 
 
-void Reproductice::actionReproductrice(Terrain t) {
+void Reproductrice::actionReproductrice(Terrain t) {
     if (checkReproduction()) {
         // Reproduire
         if (auNid()) {

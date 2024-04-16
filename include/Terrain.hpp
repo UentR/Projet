@@ -26,22 +26,81 @@ class Cell {
         int sugarAmount;
         Colonie *nestAbove;
 
-        bool containsSugar() const;             // Done
-        bool containsNest() const;              // Done
-        bool containsNest(Colonie c) const;     // 
-        bool containsNest(int Idx) const;       // Done
-        bool containsWall() const;              // Done
-        bool isEmpty() const;                   //
-        bool containsPheromone(unsigned int a) const; // Done
-        bool containsPheromone(int a) const;    // Done
-        bool containsPheromone() const;         // Done
-        bool containsAnt() const;               // Done
+        /** @b DONE
+         * @return true si la cellule contient du sucre
+         */
+        bool containsSugar() const;
 
-        void update();                          // Done
-        int removeSugar(int amount);            // Done
+        /** @b DONE
+         * @return true si la cellule contient un nid
+         */
+        bool containsNest() const;
 
-        Cell(int Sugar, int State, int Height); // Done
-        Cell();                                 // Done
+        /** @b NOT-DONE
+         * @param Colonie Colonie à vérifier
+         * @return true si la cellule contient un nid de la colonie donnée
+         */
+        bool containsNest(Colonie c) const;
+
+        /** @b DONE
+         * @param int Identifiant de la colonie
+         * @return true si la cellule contient un nid de la colonie du même identifiant
+         */
+        bool containsNest(int Idx) const;
+
+        /** @b DONE
+         * @return true si la cellule contient un mur
+         */
+        bool containsWall() const;
+
+        /** @b DONE
+         * @return true si la cellule est vide
+         */
+        bool isEmpty() const;
+
+        /** @b DONE
+         * @param unsigned_int Identifiant du phéromone
+         * @return true si la cellule contient le phéromone du même identifiant
+         */
+        bool containsPheromone(unsigned int a) const;
+
+        /** @b DONE
+         * @param int Identifiant du phéromone
+         * @return true si la cellule contient un phéromone différent de l'identifiant
+         */
+        bool containsPheromone(int a) const;
+
+        /** @b DONE
+         * @return true si la cellule contient un phéromone
+         */
+        bool containsPheromone() const;
+
+        /** @b DONE
+         * @return true si la cellule contient une fourmi
+         */
+        bool containsAnt() const;
+
+        /** @b DONE
+         * @brief Update les valeurs des phéromones
+         */
+        void update();
+
+        /** @b DONE
+         * @brief Retire du sucre à la cellule
+         * @param int Quantité de sucre à retirer
+         * @return Quantité de sucre retirée
+         */
+        int removeSugar(int amount);
+
+        /** @b DONE
+         * @brief Constructeur de Cell avec variables
+         */
+        Cell(int Sugar, int State, int Height);
+
+        /** @b DONE
+         * @brief Constructeur de Cell par défaut
+         */
+        Cell();
 
 };
 
@@ -75,13 +134,40 @@ class Terrain {
     
     public:
         vector<Cell> Cells;
-        int getWidth() const;           // Done
-        int getHeight() const;          // Done
-        int *toCoord(int Idx) const;    // Done
 
-        void toText() const;            // Done
+        /** @b DONE
+         * @return Largeur du terrain
+         */
+        int getWidth() const;
+
+        /** @b DONE
+         * @return Hauteur du terrain
+         */
+        int getHeight() const;
+
+        /** @b DONE
+         * @param int Index de la cellule
+         * @return Coordonnées de la cellule associée
+         */
+        int *toCoord(int Idx) const;
+
+        /** @b DONE
+         * @brief Affiche le terrain en texte
+         */
+        void toText() const;
+
+        /** @b NOT-DONE
+         * @brief Affiche le terrain en PPM
+         */
         void toPPM() const;
+
+        /** @b NOT-DONE
+         * @brief Affiche le terrain via un écran
+         */
         void toScreen() const;
 
-        Terrain(int w, int h);          // Done
+        /** @b DONE
+         * @brief Constructeur de Terrain avec variables
+         */
+        Terrain(int w, int h);
 };
