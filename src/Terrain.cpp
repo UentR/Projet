@@ -83,6 +83,10 @@ int *Terrain::toCoord(int Idx) const {
     return Coord;
 }
 
+int Terrain::toIdx(int x, int y) const {
+    return y*width + x;
+}
+
 // Methode Cell
 
 void Cell::update() {
@@ -199,12 +203,12 @@ void Terrain::toText() const {
 }
 
 
-int main() {
-    Cell c{0, 0, 0};
-    cout << c << endl;
-    Terrain t{44, 25};
-    // cout << t << endl;
+// int main() {
+//     Cell c{0, 0, 0};
+//     cout << c << endl;
+//     Terrain t{44, 25};
+//     // cout << t << endl;
 
-    t.toText();
-    return 0;
-}
+//     t.toText();
+//     return 0;
+// }

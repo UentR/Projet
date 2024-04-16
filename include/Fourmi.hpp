@@ -3,6 +3,7 @@
 #include <vector>
 #include "Coord.hpp"
 #include "BaseVariables.hpp"
+#include "Terrain.hpp"
 
 using namespace std;
 
@@ -15,19 +16,20 @@ class Fourmi {
         float capaciteSucre;
         float forceAttaque;
         bool isAttacked;
-        int colonie;
+        int colonieIdx;
+        Colonie *colonie;
         
-        float attaquer(Coord c);
-        float ramasserSucre(Coord c);
-        bool deposerSucre(Coord c);
-        bool deplacer(Coord c);
-        bool mettrePheromone() const;
-        void choixAction();
-        void soigner();
-        void fourmiProche() const;
+        float attaquer(Terrain t, Coord c, int Idx);    // 
+        int ramasserSucre(Terrain t, Coord c);          // Done
+        void deposerSucre(Coord c);                     // 
+        void deplacer(Terrain t, Coord c);              // 
+        void mettrePheromone(Terrain t) const;          // Done
+        void choixAction();                             // 
+        void soigner();                                 // 
+        void fourmiProche() const;                      // 
 
-        Fourmi(Coord c, int Idx);
-        Fourmi();
+        Fourmi(Coord c, int Idx, Colonie *c);           // Done
+        Fourmi();                                       // Done
 
 };
 

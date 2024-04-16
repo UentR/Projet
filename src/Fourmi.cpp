@@ -2,8 +2,6 @@
 #include <iostream>
 #include <string>
 
-// #include "BaseVariables.hpp"
-
 using namespace std;
 
 // cout
@@ -27,12 +25,13 @@ ostream &operator<<(ostream &out, Colonie c) { // ", position : " << c.getPositi
 
 // Constructeurs
 
-Fourmi::Fourmi() {
+Fourmi::Fourmi() : colonieIdx{-1}, position{0, 0} {
     quantiteSucre = 0;
     isAttacked = false;
+    colonie = nullptr;
 }
 
-Fourmi::Fourmi(Coord c, int Idx) : colonie{Idx}, position{c} {
+Fourmi::Fourmi(Coord c, int Idx, Colonie *c) : colonieIdx{Idx}, position{c}, colonie{c} {
     quantiteSucre = 0;
     isAttacked = false;
 }
@@ -58,19 +57,18 @@ Reproductrice::Reproductrice(Coord c, int Idx) : Fourmi(c, Idx) {
     forceAttaque = AttaqueR;
 }
 
-
 Colonie::Colonie(Coord c) : nbFourmis{0}, typeFourmis{{0, 0, 0}}, quantiteSucre{0}, reproducticeEnAttente{0}, Idx{0}, position{c} {
     Fourmi f;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < NbF[i]; j++) {
             if (i == 0) {
-                Ouvriere o{c, Idx};
+                Ouvriere o{c, Idx, this};
                 f = o;
             } else if (i == 1) {
-                Guerriere g{c, Idx};
+                Guerriere g{c, Idx, this};
                 f = g;
             } else {
-                Reproductrice r{c, Idx};
+                Reproductrice r{c, Idx, this};
                 f = r;
             }
             typeFourmis[i]++;
@@ -79,6 +77,7 @@ Colonie::Colonie(Coord c) : nbFourmis{0}, typeFourmis{{0, 0, 0}}, quantiteSucre{
         }
     }
 }
+
 
 // Méthodes Colonie
 
@@ -120,10 +119,23 @@ Coord Colonie::getPosition() const {
     return position;
 }
 
+// Methodes fourmis
 
-bool mettrePheromone() {
-    return false;
+void Fourmi::mettrePheromone(Terrain t) const {
+    t.Cells[t.toIdx(position.x, position.y)].pheromones[colonie] = PosePheromones;
 }
+
+int Fourmi::ramasserSucre(Terrain t, Coord c) {
+    int Idx = t.toIdx(c.getColonne(), c.getLigne());
+    if (t.Cells[Idx].containsSugar()) {
+        int sugar = t.Cells[Idx].removeSugar(capaciteSucre);
+        quantiteSucre += sugar;
+        return sugar;
+    }
+    return 0;
+}
+
+
 
 int main() {
     Coord c{0, 1};

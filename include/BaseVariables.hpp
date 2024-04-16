@@ -36,4 +36,6 @@ extern array<float, 3> PourcentF;
 
 extern array<int, 3> NbF;
 
+#define PosePheromones 255
+
 #endif

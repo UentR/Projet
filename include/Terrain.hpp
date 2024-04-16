@@ -1,8 +1,9 @@
 #include <array>
-#include "Fourmi.hpp"
+
 #include <map>
 #include <cstdlib>
 #include <ctime>
+
 
 
 using namespace std;
@@ -13,7 +14,7 @@ using namespace std;
 #define HSugar 0.8
 #define HNest 1
 
-#define REMOVEPHEROMONES 10
+#define REMOVEPHEROMONES 5
 
 
 class Cell {
