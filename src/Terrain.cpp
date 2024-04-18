@@ -18,7 +18,7 @@ ostream &operator<<(ostream &out, Terrain t) {
     int w = t.getWidth();
     out << "Width: " << w << ", Height: " << t.getHeight() << endl;
     int I = 0;
-    for (Cell c : t.Cells) {
+    for (Cell *c : t.Cells) {
         int *C = t.toCoord(I);
         out << "(" << C[0] << ", " << C[1] << ")" << '\t' << c << endl;
         I++;
@@ -26,8 +26,8 @@ ostream &operator<<(ostream &out, Terrain t) {
     return out;
 }
 
-// Constructeur 
 
+// Constructeur 
 Cell::Cell(int Sugar, int State, int Height) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{Height}, nestAbove{nullptr} {}
 
 Cell::Cell(int Sugar, int State, Colonie *ptrCol) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromones{}, height{0}, nestAbove{ptrCol} {}
@@ -63,7 +63,7 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
             state = 0;
         }
         Cell c{Sugar, state, H};
-        Cells.push_back(c);
+        Cells.push_back(&c);
     }
 }
 
@@ -89,6 +89,11 @@ int Terrain::toIdx(int x, int y) const {
     return y*width + x;
 }
 
+Cell *Terrain::getCell(Coord c) const {
+    return Cells[toIdx(c.getColonne(), c.getLigne())];
+}
+
+
 // Methode Cell
 
 void Cell::update() {
@@ -113,6 +118,10 @@ int Cell::removeSugar(int Amount) {
     }
 }
 
+unsigned short int Cell::getState() const {
+    return state;
+}
+
 
 // Methode state cell
 
@@ -121,17 +130,20 @@ bool Cell::containsSugar() const {
 }
 
 bool Cell::containsNest() const {
-    return (state%4) == 0;
-    // return nestAbove != nullptr;
+    return nestAbove!=nullptr;
 }
 
 bool Cell::containsNest(int Idx) const {
-    return (state>>2) == Idx;
+    return containsNest() && nestAbove->getIdx() == Idx;
 }
 
-// bool Cell::containsNest(Colonie c) const {
-//     return (state>>2) == c.Idx;
-// }
+bool Cell::isEmpty() const {
+    return state==2;
+}
+
+bool Cell::containsNest(Colonie *c) const {
+    return containsNest() && nestAbove == c;
+}
 
 bool Cell::containsPheromone() const {
     for (auto const& [key, val] : pheromones) {
@@ -183,18 +195,18 @@ void Terrain::toText() const {
     cout << Horizontal+Horizontal+Horizontal+UpLeftC;
 
     int Idx=0;
-    Cell Current;
+    Cell *Current;
     for (int y=0; y<height; y++) {
         cout << endl << Vertical;
         for (int x=0; x<width; x++) {
             Current = Cells[Idx];
-            if (Current.containsAnt()) {
+            if (Current->containsAnt()) {
                 cout << " " << Triangle << " ";
-            } else if (Current.containsNest()) {
+            } else if (Current->containsNest()) {
                 cout << " " << Carre << " ";
-            } else if (Current.containsSugar()) {
+            } else if (Current->containsSugar()) {
                 cout << " " << Circle << " ";
-            } else if (Current.containsWall()) {
+            } else if (Current->containsWall()) {
                 cout << Full << Full << Full;
             } else {
                 cout << "   ";

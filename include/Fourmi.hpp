@@ -1,13 +1,20 @@
+#define FOURMI
+
+#ifndef TERRAIN
+#include "Terrain.hpp"
+#endif
+
 #include <array>
 #include "Debug.hpp"
 #include <vector>
 #include "Coord.hpp"
 #include "BaseVariables.hpp"
-#include "Terrain.hpp"
 #include <set>
 
-
 using namespace std;
+
+class Colonie;
+class Terrain;
 
 class Fourmi {
     public:
@@ -21,6 +28,7 @@ class Fourmi {
         bool isAttacked;
         int colonieIdx;
         Colonie *colonie;
+        Terrain *terrain;
         
         /** @b DONE
          * @brief Check si la fourmi est au nid
@@ -59,7 +67,7 @@ class Fourmi {
          * @param Coord Coordonnées de la case à ramasser
          * @return int : Quantité de sucre ramassée
          */
-        int ramasserSucre(Terrain t, Coord c);
+        int ramasserSucre(Coord c);
 
         /** @b DONE
          * @brief Dépose du sucre dans le nid
@@ -67,7 +75,7 @@ class Fourmi {
          * @param Coord Coordonnées de la case à déposer
          * @return bool : Si le sucre a été déposé
          */
-        bool deposerSucre(Terrain t, Coord c);
+        bool deposerSucre(Coord c);
 
         /** @b DONE
          * @brief Déplace la fourmi
@@ -75,13 +83,13 @@ class Fourmi {
          * @param Coord Coordonnées de la case où se déplacer
          * @return bool : Si la fourmi a été déplacée
          */
-        bool deplacer(Terrain t, Coord c);
+        bool deplacer(Coord c);
 
         /** @b DONE
          * @brief Met des phéromones sur la case
          * @param Terrain Terrain sur lequel se trouve la fourmi
          */
-        void mettrePheromone(Terrain t) const;
+        void mettrePheromone() const;
 
         /** @b DONE
          * @brief Check les fourmis aux alentours
@@ -92,7 +100,7 @@ class Fourmi {
         /** @b DONE
          * @brief Permet à une fourmi de choisir une action de base
          */
-        void choixAction(Terrain t);
+        void choixAction();
 
         /** @b NOT-DONE
          * @brief Soigne la fourmi
@@ -102,7 +110,7 @@ class Fourmi {
         /** @b DONE
          * @brief Constructeur des fourmis avec variables
          */
-        Fourmi(Coord c, int Idx, Colonie *c);
+        Fourmi(Coord c, int Idx, Colonie *col, Terrain *t);
 
         /** @b DONE
          * @brief Constructeur des fourmis par défaut
@@ -116,12 +124,12 @@ class Guerriere : public Fourmi {
         /** @b DONE
          * @brief Choix de l'action de la guerrière
          */
-        void actionGuerriere(Terrain t);
+        void actionGuerriere();
 
         /** @b DONE
          * @brief Constructeur de la guerrière
          */
-        Guerriere(Coord c, int Idx);
+        Guerriere(Coord c, int Idx, Colonie *col, Terrain *t);
 };
 
 class Ouvriere : public Fourmi {
@@ -134,12 +142,12 @@ class Ouvriere : public Fourmi {
         /** @b DONE
          * @brief Choix de l'action de l'ouvrière
          */
-        void actionOuvriere(Terrain t);
+        void actionOuvriere();
 
         /** @b DONE
          * @brief Constructeur de l'ouvrière
          */
-        Ouvriere(Coord c, int Idx);
+        Ouvriere(Coord c, int Idx, Colonie *col, Terrain *t);
 };
 
 class Reproductrice : public Ouvriere {
@@ -157,12 +165,12 @@ class Reproductrice : public Ouvriere {
         /** @b DONE
          * @brief Choix de l'action de la reproductrice
          */
-        void actionRepoductrice(Terrain t);
+        void actionReproductrice();
         
         /** @b DONE
          * @brief Constructeur de la reproductrice
          */
-        Reproductrice(Coord c, int Idx);
+        Reproductrice(Coord c, int Idx, Colonie *col, Terrain *t);
 };
 
 
@@ -172,14 +180,17 @@ class Colonie {
     private:
         int nbFourmis;
         array<int, 3> typeFourmis;
-        set<Fourmi *f> reproducticeEnAttente;
+        set<Fourmi *> reproductriceEnAttente;
         Coord position;
+        Terrain *terrain;
 
     public:
-
+        
         int Idx;
         int quantiteSucre;
-        vector<Fourmi> fourmis;
+        vector<Fourmi *> fourmis;
+
+        Terrain *getTerrain();
 
         /** @b DONE
          * @brief Ajoute une fourmi à la liste des fourmis pretes à se reproduire
@@ -195,7 +206,7 @@ class Colonie {
         /** @b DONE
          * @brief Supprime une fourmie de la colonie
          */
-        void deleteFourmi(Fourmi f);
+        void deleteFourmi(Fourmi *f);
 
         /** @b DONE
          * @return int : Nombre de fourmis dans la colonie
@@ -221,13 +232,13 @@ class Colonie {
         /** @b DONE
          * @brief Constructeur de la colonie
          */
-        Colonie(Coord c);
+        Colonie(Terrain *t, Coord c);
 };
 
 /** @b DONE
  * @brief Surcharge de l'opérateur << pour les fourmis
  */
-ostream &operator<<(ostream &out, Fourmi f);
+ostream &operator<<(ostream &out, Fourmi *f);
 
 /** @b DONE
  * @brief Surcharge de l'opérateur << pour les colonies

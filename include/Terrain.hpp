@@ -1,10 +1,15 @@
-#include <array>
+#define TERRAIN
 
+#ifndef FOURMI
+#include "Fourmi.hpp"
+#endif
+
+#include <array>
 #include <map>
 #include <cstdlib>
 #include <ctime>
-
-
+#include <vector>
+#include <string>
 
 using namespace std;
 
@@ -16,6 +21,9 @@ using namespace std;
 
 #define REMOVEPHEROMONES 5
 
+class Colonie;
+class Fourmi;
+class Coord;
 
 class Cell {
     public:
@@ -25,6 +33,8 @@ class Cell {
         vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
         int sugarAmount;
         Colonie *nestAbove;
+
+        unsigned short int getState() const;
 
         /** @b DONE
          * @return true si la cellule contient du sucre
@@ -40,7 +50,7 @@ class Cell {
          * @param Colonie Colonie à vérifier
          * @return true si la cellule contient un nid de la colonie donnée
          */
-        bool containsNest(Colonie c) const;
+        bool containsNest(Colonie *c) const;
 
         /** @b DONE
          * @param int Identifiant de la colonie
@@ -98,6 +108,11 @@ class Cell {
         Cell(int Sugar, int State, int Height);
 
         /** @b DONE
+         * @brief Constructeur de Cell avec variables
+         */
+        Cell(int Sugar, int State, Colonie *Col);
+
+        /** @b DONE
          * @brief Constructeur de Cell par défaut
          */
         Cell();
@@ -133,7 +148,14 @@ class Terrain {
         
     
     public:
-        vector<Cell> Cells;
+        vector<Cell *> Cells;
+
+        /** @b DONE
+         * @param int Coordonnée X
+         * @param int Coordonnée Y
+         * @return Y*Width + X
+        */
+        int toIdx(int x, int y) const;
 
         /** @b DONE
          * @return Largeur du terrain
@@ -150,6 +172,9 @@ class Terrain {
          * @return Coordonnées de la cellule associée
          */
         int *toCoord(int Idx) const;
+
+
+        Cell *getCell(Coord c) const;
 
         /** @b DONE
          * @brief Affiche le terrain en texte

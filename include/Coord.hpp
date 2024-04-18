@@ -1,6 +1,8 @@
 #include <iostream>
 #include <array>
 #include <stdexcept>
+#include <vector>
+
 
 using namespace std;
 
@@ -57,9 +59,12 @@ bool operator!=(Coord c1, Coord c2);
 
 struct EnsembleCoord{
     private:
-        vector<Coord>(taille) Grille;
+        // vector<Coord>(taille) Grille;
+        vector<Coord> Grille;
         int position(Coord objet) const;
     public:
+        vector<Coord> getGrille() const;
+
         EnsembleCoord(vector<Coord>);
         bool contient(Coord objet) const;
         void ajoute(Coord objet);

@@ -21,6 +21,7 @@ includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
 objects = $(addprefix $(OBJDIR)/, Fourmi.o BaseVariables.o)
 depend = $(addprefix $(INCDIR)/, Fourmi.hpp BaseVariables.hpp)
 
+
 jeu = $(addprefix $(OBJDIR)/,  )
 jeudepend = $(addprefix $(INCDIR)/, )
 
@@ -41,7 +42,7 @@ Terrain: $(includeCoord) $(objectCoord) $(dependDebug) $(debug) $(depend) $(obje
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation terrain terminée"
 
-Fourmi: $(dependDebug) $(debug) $(includeCoord) $(objectCoord) $(depend) $(objects)
+Fourmi: $(dependDebug) $(debug) $(includeCoord) $(objectCoord) $(includeTerrain) $(objectTerrain) $(depend) $(objects)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
 
