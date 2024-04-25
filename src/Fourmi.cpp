@@ -27,13 +27,13 @@ ostream &operator<<(ostream &out, Colonie c) { // ", position : " << c.getPositi
 
 Fourmi::Fourmi() : colonieIdx{-1}, position{0, 0}, vision{1} {
     quantiteSucre = 0;
-    isAttacked = false;
+    isAttacked = 0;
     colonie = nullptr;
 }
 
 Fourmi::Fourmi(Coord c, int Idx, Colonie *col, Terrain *t) : terrain{t}, colonieIdx{Idx}, position{c}, colonie{col}, vision{1} {
     quantiteSucre = 0;
-    isAttacked = false;
+    isAttacked = 0;
 }
 
 Ouvriere::Ouvriere(Coord c, int Idx, Colonie *col, Terrain *t) : Fourmi(c, Idx, col, t) {
@@ -57,7 +57,13 @@ Reproductrice::Reproductrice(Coord c, int Idx, Colonie *col, Terrain *t) : Ouvri
     forceAttaque = AttaqueR;
 }
 
-Colonie::Colonie(Terrain *t, Coord c) : terrain{t}, nbFourmis{0}, typeFourmis{{0, 0, 0}}, quantiteSucre{0}, reproductriceEnAttente{0}, Idx{0}, position{c} {
+Colonie::Colonie(Terrain *t, Coord c, int i) : terrain{t}, nbFourmis{0}, typeFourmis{{0, 0, 0}}, quantiteSucre{0}, reproductriceEnAttente{0}, position{c} {
+    Idx = i;
+    color = new int[3];
+    for (int i = 0; i < 3; i++) {
+        color[i] = 255 * (i==Idx);
+    }
+    
     Fourmi *f;
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < NbF[i]; j++) {
@@ -148,14 +154,18 @@ bool Colonie::CheckReproduction() {
     return false;
 }
 
+int *Colonie::getColor() {
+    return color;
+}
+
 // Methodes fourmis
 
 void Fourmi::mettrePheromone() const {
-    terrain->Cells[terrain->toIdx(position.getColonne(), position.getLigne())]->pheromones[colonie->getIdx()] = PosePheromones;
+    terrain->Cells[terrain->toIdx(position.getColonne(), position.getLigne())]->pheromonesSucre[colonie->getIdx()] = PosePheromones;
 }
 
 float Fourmi::attaquer(Fourmi *f) {
-    f->isAttacked = true;
+    f->isAttacked = NbTourAttaque;
     vie -= f->forceAttaque;
     f->vie -= forceAttaque;
     return f->vie;
@@ -185,6 +195,11 @@ bool Fourmi::deplacer(Coord c) {
     int Idx = terrain->toIdx(c.getColonne(), c.getLigne());
     if (terrain->Cells[Idx]->isEmpty()) {
         position = c;
+
+        // ENLEVER FOURMI DE LA CELLULE PRECEDENTE
+        // Ajouter fourmi à la nouvelle cellule
+
+
         return true;
     }
     return false;
@@ -239,26 +254,28 @@ vector<Coord> Fourmi::pheromonesProches(int Idx) const {
 
 void Fourmi::choixAction() {
     if (quantiteSucre>MinSucre) {
-        if (auNid()) { 
+        if (auNid()) { // Done
             // Déposer sucre
             deposerSucre(colonie->getPosition());
         }
         else {
+            
             // se déplacer vers le nid
+
         }
     } else {
         Coord Sucre = procheState(1);
-        if (Sucre != (Coord){-1, -1}) {
+        if (Sucre != (Coord){-1, -1}) { // Done
             // Ramasser sucre
             ramasserSucre(Sucre);
             mettrePheromone();
         } 
         else {
             vector<Coord> pheromones = pheromonesProches(colonieIdx);
-            if (pheromones.size() > 0) { 
+            if (pheromones.size() > 0) {
                 // Suivre pheromone
                 deplacer(pheromones[0]);
-            } else {    
+            } else {  // Mid Done choix aléatoire
                 // Se déplacer aléatoirement
                 Coord voisin = procheState(2);
                 deplacer(voisin);
@@ -299,7 +316,8 @@ void Ouvriere::fuir() {
 
 
 void Ouvriere::actionOuvriere() {
-    if (isAttacked) {
+    if (isAttacked > 0) {
+        isAttacked--;
         // Fuir
         fuir();
     } else {
@@ -316,7 +334,6 @@ bool Reproductrice::checkReproduction() {
 }
 
 
-
 void Reproductrice::actionReproductrice() {
     if (checkReproduction()) {
         // Reproduire
@@ -331,10 +348,14 @@ void Reproductrice::actionReproductrice() {
     }
 }
 
-int main() {
-    Terrain t{10, 10};
-    Coord c{0, 1};
-    Colonie Col{&t, c};
-    cout << Col << endl;
-    return 0;
-}
+
+
+
+
+// int main() {
+//     Terrain t{10, 10};
+//     Coord c{0, 1};
+//     Colonie Col{&t, c};
+//     cout << Col << endl;
+//     return 0;
+// }

@@ -8,7 +8,7 @@ INCDIR = include
 vpath %.cpp src
 vpath %.hpp include
 
-PROGS=Fourmi
+PROGS=Jeu
 debug = $(addprefix $(OBJDIR)/, Debug.o)
 dependDebug = $(addprefix $(INCDIR)/, Debug.hpp)
 
@@ -18,8 +18,8 @@ includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
 objectTerrain = $(addprefix $(OBJDIR)/, Terrain.o )
 includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
 
-objects = $(addprefix $(OBJDIR)/, Fourmi.o BaseVariables.o)
-depend = $(addprefix $(INCDIR)/, Fourmi.hpp BaseVariables.hpp)
+objects = $(addprefix $(OBJDIR)/, Terrain.o Fourmi.o Coord.o BaseVariables.o BoucleJeu.o)
+depend = $(addprefix $(INCDIR)/, Terrain.hpp Fourmi.hpp Coord.hpp BaseVariables.hpp BoucleJeu.hpp)
 
 
 jeu = $(addprefix $(OBJDIR)/,  )
@@ -42,9 +42,14 @@ Terrain: $(includeCoord) $(objectCoord) $(dependDebug) $(debug) $(depend) $(obje
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation terrain terminée"
 
-Fourmi: $(dependDebug) $(debug) $(includeCoord) $(objectCoord) $(includeTerrain) $(objectTerrain) $(depend) $(objects)
+Fourmi: $(dependDebug) $(debug) $(includeTerrain) $(objectTerrain) $(depend) $(objects) $(includeCoord) $(objectCoord) 
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
+
+Jeu: $(dependDebug) $(debug) $(depend) $(objects)
+	@$(CXX) $(CXXFLAGS) $^ -o $@
+	@echo "Compilation jeu terminée"
+
 
 Demo:  $(debug) $(demo)
 	@$(CXX) $(CXXFLAGS) $^ -o $@

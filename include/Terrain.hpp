@@ -1,7 +1,12 @@
+#ifndef TERRAIN
 #define TERRAIN
 
 #ifndef FOURMI
 #include "Fourmi.hpp"
+#endif
+
+#ifndef COORD
+#include "Coord.hpp"
 #endif
 
 #include <array>
@@ -27,14 +32,20 @@ class Coord;
 
 class Cell {
     public:
-        map<int, int> pheromones;
+        map<int, int> pheromonesSucre;
+        map<int, int> pheromonesNid;
         int height;
         unsigned short int state;               // 6 premier bits = colonie correspondante / 2 derniers = state 
         vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
         int sugarAmount;
         Colonie *nestAbove;
+        Coord coord;
 
         unsigned short int getState() const;
+
+
+        Colonie *getNest() const;
+        bool setNest(Colonie *c);
 
         /** @b DONE
          * @return true si la cellule contient du sucre
@@ -105,12 +116,14 @@ class Cell {
         /** @b DONE
          * @brief Constructeur de Cell avec variables
          */
+        Cell(int Sugar, int State, int Height, Coord Coordo);
+
         Cell(int Sugar, int State, int Height);
 
         /** @b DONE
          * @brief Constructeur de Cell avec variables
          */
-        Cell(int Sugar, int State, Colonie *Col);
+        Cell(int Sugar, int State, int Height, Coord Coordo, Colonie *Col);
 
         /** @b DONE
          * @brief Constructeur de Cell par défaut
@@ -123,29 +136,7 @@ class Cell {
 class Terrain {
     private:
         const int width;
-        const int height;
-
-        const string UpLeftC = "\U00002513";
-        const string UpRightC = "\U0000250F";
-        const string DownLeftC = "\U0000251B";
-        const string DownRightC = "\U00002517";
-
-        const string Vertical = "\U00002503";
-        const string Horizontal = "\U00002501";
-
-        const string Cross = "\U0000254B";
-
-        const string TLeft = "\U00002523";
-        const string TUp = "\U00002533";
-        const string TRight = "\U0000252B";
-        const string TDown = "\U0000253B";
-
-        const string Triangle = "\U000025B2";
-        const string Carre = "\U000025A0";
-        const string Circle = "\U000025CF";
-
-        const string Full = "\U00002588";
-        
+        const int height;        
     
     public:
         vector<Cell *> Cells;
@@ -173,26 +164,14 @@ class Terrain {
          */
         int *toCoord(int Idx) const;
 
+        void updateCell();
 
         Cell *getCell(Coord c) const;
 
-        /** @b DONE
-         * @brief Affiche le terrain en texte
-         */
-        void toText() const;
-
-        /** @b NOT-DONE
-         * @brief Affiche le terrain en PPM
-         */
-        void toPPM() const;
-
-        /** @b NOT-DONE
-         * @brief Affiche le terrain via un écran
-         */
-        void toScreen() const;
 
         /** @b DONE
          * @brief Constructeur de Terrain avec variables
          */
         Terrain(int w, int h);
 };
+#endif

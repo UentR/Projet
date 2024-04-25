@@ -37,7 +37,7 @@ void dessinerDamier(){
   // fermeture du fichier
   fic.close();
 }
-int main (){
-  dessinerDamier();
-  return 0;
-}
+// int main (){
+//   dessinerDamier();
+//   return 0;
+// }

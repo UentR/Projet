@@ -1,3 +1,4 @@
+#ifndef FOURMI
 #define FOURMI
 
 #ifndef TERRAIN
@@ -25,7 +26,7 @@ class Fourmi {
         float quantiteSucre;
         float capaciteSucre;
         float forceAttaque;
-        bool isAttacked;
+        int isAttacked;
         int colonieIdx;
         Colonie *colonie;
         Terrain *terrain;
@@ -183,12 +184,15 @@ class Colonie {
         set<Fourmi *> reproductriceEnAttente;
         Coord position;
         Terrain *terrain;
+        int *color;
 
     public:
         
         int Idx;
         int quantiteSucre;
         vector<Fourmi *> fourmis;
+
+        int *getColor();
 
         Terrain *getTerrain();
 
@@ -229,10 +233,12 @@ class Colonie {
          */
         int produireFourmis();
 
+        void nextTurn();
+
         /** @b DONE
          * @brief Constructeur de la colonie
          */
-        Colonie(Terrain *t, Coord c);
+        Colonie(Terrain *t, Coord c, int i);
 };
 
 /** @b DONE
@@ -244,3 +250,5 @@ ostream &operator<<(ostream &out, Fourmi *f);
  * @brief Surcharge de l'opérateur << pour les colonies
  */
 ostream &operator<<(ostream &out, Colonie c);
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef COORD
+#define COORD
+
 #include <iostream>
 #include <array>
 #include <stdexcept>
@@ -6,7 +9,7 @@
 
 using namespace std;
 
-const int TAILLEGRILLE = 100; 
+const int TAILLEGRILLE = 1000; 
 
 class Coord{
     private:
@@ -75,3 +78,5 @@ struct EnsembleCoord{
 };
 
 ostream &operator<<(ostream &out, EnsembleCoord);
+
+#endif

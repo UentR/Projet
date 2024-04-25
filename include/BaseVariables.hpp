@@ -6,6 +6,8 @@ using namespace std;
 
 #define FOURMI_HPP
 
+#define NbTourAttaque 5
+
 // Vie des fourmis
 #define VieO 10
 #define VieG 15
