@@ -49,7 +49,7 @@ void Jeu::nextTurn() {
 
 void Jeu::BoucleJeu() {
     writeToDebugFile("BoucleJeu", INFO_DETAIL);
-    while (nbTours < 3) {
+    while (nbTours < 5) {
         writeToDebugFile("Tour " + to_string(nbTours), ALL_LOG);
         nextTurn();
         toPPM();
