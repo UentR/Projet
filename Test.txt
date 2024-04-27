@@ -1,8 +1,0 @@
-/usr/bin/ld: object/Fourmi.o:/home/quentin/Programmation/Python/Projet/include/BaseVariables.hpp:30: multiple definition of `NbF'; object/Terrain.o:/home/quentin/Programmation/Python/Projet/include/Fourmi.hpp:33: first defined here
-/usr/bin/ld: object/Fourmi.o:/home/quentin/Programmation/Python/Projet/include/BaseVariables.hpp:24: multiple definition of `PourcentF'; object/Terrain.o:/home/quentin/Programmation/Python/Projet/include/Fourmi.hpp:27: first defined here
-/usr/bin/ld: object/Fourmi.o: in function `Colonie::produireFourmis()':
-/home/quentin/Programmation/Python/Projet/src/Fourmi.cpp:86: undefined reference to `writeToDebugFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int)'
-/usr/bin/ld: /home/quentin/Programmation/Python/Projet/src/Fourmi.cpp:107: undefined reference to `writeToDebugFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int)'
-/usr/bin/ld: /home/quentin/Programmation/Python/Projet/src/Fourmi.cpp:90: undefined reference to `writeToDebugFile(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int)'
-collect2: error: ld returned 1 exit status
-make: *** [Makefile:41: Terrain] Error 1

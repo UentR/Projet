@@ -43,6 +43,10 @@ class Cell {
 
         unsigned short int getState() const;
 
+        void waitForNest();
+
+        void removeAnt(Fourmi *f);
+        void addAnt(Fourmi *f);
 
         Colonie *getNest() const;
         bool setNest(Colonie *c);
@@ -168,10 +172,18 @@ class Terrain {
 
         Cell *getCell(Coord c) const;
 
+        vector<Cell *> voisin(Coord c, int Rayon) const;
 
         /** @b DONE
          * @brief Constructeur de Terrain avec variables
          */
         Terrain(int w, int h);
 };
+
+ostream &operator<<(ostream &out, Cell c);
+
+ostream &operator<<(ostream &out, Terrain t);
+
+
+
 #endif

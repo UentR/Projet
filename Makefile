@@ -2,7 +2,7 @@
 
 CXX = g++
 # CXXFLAGS = -W -Wall -std=c++11 -O2 -g -Wno-sign-compare -Wno-narrowing
-CXXFLAGS = -W -O2 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
+CXXFLAGS = -W -O3 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
 OBJDIR = object
 INCDIR = include
 vpath %.cpp src
@@ -50,6 +50,8 @@ Jeu: $(dependDebug) $(debug) $(depend) $(objects)
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
 
+LineNumber:
+	@wc -l src/*.cpp include/*.hpp
 
 Demo:  $(debug) $(demo)
 	@$(CXX) $(CXXFLAGS) $^ -o $@

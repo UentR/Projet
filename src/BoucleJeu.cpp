@@ -11,20 +11,24 @@ using namespace std;
 
 // Constructeurs
 
-Jeu::Jeu(int nbColonies, int W, int H) : nbTours{0}, Width{W}, Height{H} {
+Jeu::Jeu(int W, int H, int nbColonies) : nbTours{0}, Width{W}, Height{H} {
+    writeToDebugFile("Jeu constructor", INFO_DETAIL);
     terrain = new Terrain(W, H);
     Colonie *c;
     Cell *cell;
     for (int i=0; i<nbColonies; i++) {
+        writeToDebugFile("Colonie: " + to_string(i), ALL_LOG);
         Coord Coordo = Coord{rand()%W, rand()%H};
+        cell = terrain->getCell(Coordo);
+        if (cell->containsNest()) {
+            i--;
+            continue;
+        }
         c = new Colonie(terrain, Coordo, i);
         colonies.push_back(c);
-        cell = terrain->getCell(c->getPosition());
-        if (!(cell->setNest(c))) {
-            delete c;
-            i--;
-        }
+        cell->setNest(c);
     }
+    writeToDebugFile("Jeu constructor fin", INFO_DETAIL);
 }
 
 Jeu::Jeu(int W, int H) : Jeu(2, W, H) {}
@@ -33,35 +37,47 @@ Jeu::Jeu(int W, int H) : Jeu(2, W, H) {}
 // Methodes
 
 void Jeu::nextTurn() {
+    writeToDebugFile("nextTurn", INFO_DETAIL);
     nbTours++;
     for (Colonie *c : colonies) { // Quelle colonie joue la première ?
-        // c->nextTurn();
+        c->nextTurn();
     }
     terrain->updateCell();
+    writeToDebugFile("nextTurn fin", INFO_DETAIL);
 }
 
 
-
-
-#define SQUARESIZE 30
-
+void Jeu::BoucleJeu() {
+    writeToDebugFile("BoucleJeu", INFO_DETAIL);
+    while (nbTours < 3) {
+        writeToDebugFile("Tour " + to_string(nbTours), ALL_LOG);
+        nextTurn();
+        toPPM();
+    }
+    writeToDebugFile("BoucleJeu fin", INFO_DETAIL);
+}
 
 
 // Methode print screen
 
 void repeatChar(int Nbr, char c) {
+    writeToDebugFile("repeatChar char", ALL_LOG);
     for (int i=0; i<Nbr; i++) {
         cout << c;
     }
+    writeToDebugFile("repeatChar char fin", ALL_LOG);
 }
 
 void repeatChar(int Nbr, string c) {
+    writeToDebugFile("repeatChar string", ALL_LOG);
     for (int i=0; i<Nbr; i++) {
         cout << c;
     }
+    writeToDebugFile("repeatChar string fin", ALL_LOG);
 }
 
 void Jeu::toText() const {
+    writeToDebugFile("toText", INFO_DETAIL);
     int LineSize = Width;
     cout << UpRightC;
     repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TUp);
@@ -97,11 +113,13 @@ void Jeu::toText() const {
     cout << DownRightC;
     repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TDown);
     cout << Horizontal+Horizontal+Horizontal+DownLeftC << endl;
+    writeToDebugFile("toText fin", INFO_DETAIL);
 }
 
 // for (auto const& [key, val] : pheromonesSucre)
 
 void Jeu::toPPM() const {
+    writeToDebugFile("toPPM", INFO_DETAIL);
     int i,j;
     int r,g,b;
     ostringstream filename;
@@ -124,11 +142,16 @@ void Jeu::toPPM() const {
         // cout << y
         for (int x=0; x<Width; x++) {
             Current = terrain->Cells[terrain->toIdx(x, y)];
+            Current = terrain->getCell(Coord{x, y});
             if (Current->containsAnt()) {
                 c = Current->getNest();
-                r = c->getColor()[0];
-                g = c->getColor()[1];
-                b = c->getColor()[2];
+                // r = c->getColor()[0];
+                // g = c->getColor()[1];
+                // b = c->getColor()[2];
+                r = 150;
+                g = 150;
+                b = 150;
+
             } else if (Current->containsNest()) {
                 c = Current->getNest();
                 r = c->getColor()[0];
@@ -168,11 +191,15 @@ void Jeu::toPPM() const {
     }
     // fermeture du fichier
     fic.close();
+    writeToDebugFile("toPPM fin", INFO_DETAIL);
 }
 
 int main() {
+    flushDebug();
+    writeToDebugFile("main", INFO_DETAIL);
     srand(time(NULL));
-    Jeu j{3, 50, 50};
+    Jeu j{50, 50, 3};
     j.toPPM();
+    j.BoucleJeu();
     return 0;
 }

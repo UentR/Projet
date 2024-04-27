@@ -16,6 +16,7 @@ using namespace std;
 
 class Colonie;
 class Terrain;
+class Cell;
 
 class Fourmi {
     public:
@@ -46,14 +47,14 @@ class Fourmi {
          * @param int état à vérifier
          * @return Coord : coordonnées du premier état trouvé
          */
-        Coord procheState(int State) const;
+        Cell *procheState(int State) const;
 
         /** @b DONE
          * @brief Check si la fourmi est proche d'un phéromone donné
          * @param int Index du phéromone à vérifier
          * @return vector<Coord> : coordonnées des endroits avec dits phéromones
          */
-        vector<Coord> pheromonesProches(int Idx) const;
+        vector<Cell *> pheromonesProches(int Idx) const;
 
         /** @b DONE
          * @brief Attaque une fourmi
@@ -68,7 +69,7 @@ class Fourmi {
          * @param Coord Coordonnées de la case à ramasser
          * @return int : Quantité de sucre ramassée
          */
-        int ramasserSucre(Coord c);
+        int ramasserSucre(Cell *cell);
 
         /** @b DONE
          * @brief Dépose du sucre dans le nid
@@ -84,7 +85,7 @@ class Fourmi {
          * @param Coord Coordonnées de la case où se déplacer
          * @return bool : Si la fourmi a été déplacée
          */
-        bool deplacer(Coord c);
+        bool deplacer(Cell *cell);
 
         /** @b DONE
          * @brief Met des phéromones sur la case
@@ -125,7 +126,7 @@ class Guerriere : public Fourmi {
         /** @b DONE
          * @brief Choix de l'action de la guerrière
          */
-        void actionGuerriere();
+        void choixAction();
 
         /** @b DONE
          * @brief Constructeur de la guerrière
@@ -143,7 +144,7 @@ class Ouvriere : public Fourmi {
         /** @b DONE
          * @brief Choix de l'action de l'ouvrière
          */
-        void actionOuvriere();
+        void choixAction();
 
         /** @b DONE
          * @brief Constructeur de l'ouvrière
@@ -166,7 +167,7 @@ class Reproductrice : public Ouvriere {
         /** @b DONE
          * @brief Choix de l'action de la reproductrice
          */
-        void actionReproductrice();
+        void choixAction();
         
         /** @b DONE
          * @brief Constructeur de la reproductrice

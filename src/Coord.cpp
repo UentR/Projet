@@ -33,14 +33,14 @@ bool Coord::setCoord(int a, int b){
 
 vector<Coord> Coord::voisin(int Rayon) const{
     vector<Coord> voisins;
-    int DebX = max(0, ind_lig-Rayon);
-    int MaxX = min(TAILLEGRILLE, ind_lig+Rayon);
-    int DebY = max(0, ind_col-Rayon);
-    int MaxY = min(TAILLEGRILLE, ind_col+Rayon);
-    for (int i = DebX; i < MaxX; i++){
-        for (int j = DebY; j < MaxY; j++){
-            if (i!=ind_lig or j!=ind_col) {
-                Coord c{i, j};
+    int DebX = max(0, ind_col-Rayon);
+    int MaxX = min(TAILLEGRILLE, ind_col+Rayon);
+    int DebY = max(0, ind_lig-Rayon);
+    int MaxY = min(TAILLEGRILLE, ind_lig+Rayon);
+    for (int x = DebX; x < MaxX; x++){
+        for (int y = DebY; y < MaxY; y++){
+            if (x!=ind_col or y!=ind_lig) {
+                Coord c{x, y};
                 voisins.push_back(c);
             }
         }
@@ -76,7 +76,7 @@ vector<Coord> EnsembleCoord::getGrille() const {
     return Grille;
 }
 
-int EnsembleCoord::position(Coord objet) const{
+int EnsembleCoord::position(Coord objet) const {
     for (int i=0;i<Grille.size();i++){
         if (Grille[i] == objet){
             return i;
@@ -100,9 +100,8 @@ void EnsembleCoord::ajoute(Coord objet){
 
 void EnsembleCoord::supprime(Coord objet){
     if (contient(objet)) {
-        // J'ai oublié comment faire mais c'est chiant
-
-        // Grille.pop_back(objet);
+        int pos = position(objet);
+        Grille.erase(Grille.begin() + pos);
     } else {
         throw invalid_argument("Cette coordonnee n'est pas dans la grille");
     }

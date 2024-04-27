@@ -32,7 +32,7 @@ class Jeu {
         int nbTours;
         int Width, Height;
 
-        Jeu(int nbColonies, int W, int H);
+        Jeu(int W, int H,int nbColonies);
         Jeu(int W, int H);
 
         void BoucleJeu();
