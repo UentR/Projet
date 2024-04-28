@@ -39,6 +39,7 @@ Fourmi::Fourmi() : colonieIdx{-1}, position{0, 0}, vision{1} {
 
 Fourmi::Fourmi(Coord c, int Idx, Colonie *col, Terrain *t) : terrain{t}, colonieIdx{Idx}, position{c}, colonie{col}, vision{1} {
     writeToDebugFile("Constructeur Fourmi params", INFO_DETAIL);
+    writeToDebugFile("Coord construct : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ALL_LOG);
     quantiteSucre = 0;
     isAttacked = 0;
     writeToDebugFile("Constructeur Fourmi Fin", INFO_DETAIL);
@@ -81,8 +82,12 @@ Colonie::Colonie(Terrain *t, Coord c, int i) : terrain{t}, nbFourmis{0}, typeFou
         writeToDebugFile(to_string(color[i]), ALL_LOG);
     }
     
-    vector<Cell *> cells = t->voisin(c, SPAWNRADIUS);
-    int Size = cells.size();
+    writeToDebugFile("Position colonie : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ERROR);
+    vector<Coord> voisins = position.voisin(SPAWNRADIUS);
+    for (Coord coord : voisins) {
+        writeToDebugFile("Coord col constr : " + to_string(coord.getColonne()) + " " + to_string(coord.getLigne()), ERROR);
+    }
+    int Size = voisins.size();
     writeToDebugFile("Size : " + to_string(Size), ALL_LOG);
 
     Fourmi *f;
@@ -90,9 +95,9 @@ Colonie::Colonie(Terrain *t, Coord c, int i) : terrain{t}, nbFourmis{0}, typeFou
         for (int j = 0; j < NbF[i]; j++) {
             int rd = rand()%Size;
             writeToDebugFile("Cell idx: " + to_string(rd), ALL_LOG);
-            Cell *cell = cells[rd];
-            Coord coord = cell->coord;
-            writeToDebugFile("Coord : " + to_string(coord.getColonne()) + " " + to_string(coord.getLigne()), ALL_LOG);
+            Coord coord = voisins[rd];
+            Cell *cell = t->getCell(coord);
+            writeToDebugFile("Coord col constr : " + to_string(coord.getColonne()) + " " + to_string(coord.getLigne()), ALL_LOG);
             
             if (i == 0) {
                 Ouvriere *o = new Ouvriere{coord, Idx, this, t};
@@ -216,6 +221,7 @@ bool Colonie::CheckReproduction() {
 
 int *Colonie::getColor() {
     writeToDebugFile("getColor", ALL_LOG);
+    writeToDebugFile("Color : "+to_string(color[0])+" "+to_string(color[1])+" "+to_string(color[2]), ALL_LOG);
     return color;
 }
 
@@ -312,9 +318,13 @@ bool Fourmi::auNid() const {
 
 Cell *Fourmi::procheState(int State) const {
     writeToDebugFile("procheState", INFO_DETAIL);
+    writeToDebugFile("State : " + to_string(State), INFO_DETAIL);
+    writeToDebugFile("Vision : " + to_string(vision), INFO_DETAIL);
+    writeToDebugFile("Position : " + to_string(position.getColonne()) + " " + to_string(position.getLigne()), INFO_DETAIL);
     vector<Coord> voisins = position.voisin(vision);
     for (Coord c : voisins) {
         Cell *Current = terrain->getCell(c);
+        writeToDebugFile("State : " + to_string(Current->getState()), INFO_DETAIL);
         if (Current->getState() == State) {
             writeToDebugFile("procheState Fin True", INFO_DETAIL);
             return Current;
@@ -348,6 +358,7 @@ void Fourmi::choixAction() {
         else {
             
             // se déplacer vers le nid
+            writeToDebugFile("choixAction Fourmi Fin NO ACTION sugar amount: " + to_string(quantiteSucre), INFO_DETAIL);
 
         }
     } else {
@@ -366,7 +377,10 @@ void Fourmi::choixAction() {
                 // Se déplacer aléatoirement
                 Cell *voisin = procheState(2);
                 if (voisin != nullptr) {
+                    writeToDebugFile("Mouv aléatoire", INFO_DETAIL);
                     deplacer(voisin);
+                } else {
+                    writeToDebugFile("choixAction Fourmi Fin NO ACTION", INFO_DETAIL);
                 }
             }
         }

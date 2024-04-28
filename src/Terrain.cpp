@@ -123,12 +123,12 @@ vector<Cell *> Terrain::voisin(Coord c, int Rayon) const {
     int DebY = max(0, ind_lig-Rayon);
     int MaxY = min(height, ind_lig+Rayon);
     Cell *cell;
-    for (int x = DebX; x < MaxX; x++) {
-        for (int y = DebY; y < MaxY; y++) {
+    for (int x = DebX; x <= MaxX; x++) {
+        for (int y = DebY; y <= MaxY; y++) {
             if (x!=ind_col or y!=ind_lig) {
-                cell = getCell(Coord{y, x});
+                cell = getCell(Coord{x, y});
                 if (cell->isEmpty()) {
-                    writeToDebugFile("Coord : " + to_string(x) + " " + to_string(y), ALL_LOG);
+                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ALL_LOG);
                     voisins.push_back(cell);
                 }
             }
@@ -174,7 +174,7 @@ Colonie *Cell::getNest() const {
 }
 
 void Cell::update() {
-    writeToDebugFile("Entrée update", INFO_DETAIL);
+    writeToDebugFile("Entrée update", ALL_LOG);
     for (auto const& [key, val] : pheromonesSucre) {
         int newValue = val - REMOVEPHEROMONES;
         if (newValue <= 0) {
@@ -185,7 +185,7 @@ void Cell::update() {
             pheromonesSucre[key] = newValue;
         }
     }
-    writeToDebugFile("Sortie update", INFO_DETAIL);
+    writeToDebugFile("Sortie update", ALL_LOG);
 }
 
 int Cell::removeSugar(int Amount) {

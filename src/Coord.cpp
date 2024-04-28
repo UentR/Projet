@@ -3,7 +3,7 @@
 using namespace std;
 
 
-Coord::Coord(int a, int b) : ind_lig{a}, ind_col{b} {
+Coord::Coord(int a, int b) : ind_lig{b}, ind_col{a} {
     if (a > TAILLEGRILLE - 1  or a < 0 or b > TAILLEGRILLE - 1 or b < 0){
         throw runtime_error("Coord qui ne sont pas dans le tableau");
     }
@@ -37,8 +37,8 @@ vector<Coord> Coord::voisin(int Rayon) const{
     int MaxX = min(TAILLEGRILLE, ind_col+Rayon);
     int DebY = max(0, ind_lig-Rayon);
     int MaxY = min(TAILLEGRILLE, ind_lig+Rayon);
-    for (int x = DebX; x < MaxX; x++){
-        for (int y = DebY; y < MaxY; y++){
+    for (int x = DebX; x <= MaxX; x++){
+        for (int y = DebY; y <= MaxY; y++){
             if (x!=ind_col or y!=ind_lig) {
                 Coord c{x, y};
                 voisins.push_back(c);
@@ -119,18 +119,30 @@ Coord EnsembleCoord::ieme(int n) const{
     return Grille[n];
 }
 
+void Coord::inverse() {
+    int temp = ind_lig;
+    ind_lig = ind_col;
+    ind_col = temp;
+}
+
 // int main() {
 //     Coord c{1, 2};
-//     Coord c_{1,2};
-//     Coord not_c{2,1};
-//     cout<< c << endl;
-//     bool test = c == c_; 
-//     cout << test << " corr : true" << endl;
-//     test = c == not_c;
-//     cout << test << " corr : false" << endl;
-//     test = c != c_;
-//     cout << test << " corr : false" << endl;
-//     test = c != not_c;
-//     cout << test << " corr : true" << endl;
-//     return 0;
+//     // Test voisin
+//     vector<Coord> voisins = c.voisin(1);
+//     for (int i=0; i<voisins.size(); i++){
+//         cout << voisins[i] << "|";
+//     }
+
+//     // Coord c_{1,2};
+//     // Coord not_c{2,1};
+//     // cout<< c << endl;
+//     // bool test = c == c_; 
+//     // cout << test << " corr : true" << endl;
+//     // test = c == not_c;
+//     // cout << test << " corr : false" << endl;
+//     // test = c != c_;
+//     // cout << test << " corr : false" << endl;
+//     // test = c != not_c;
+//     // cout << test << " corr : true" << endl;
+//     // return 0;
 // }

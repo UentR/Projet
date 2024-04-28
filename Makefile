@@ -31,12 +31,15 @@ demodepend = $(addprefix $(INCDIR)/, )
 all: $(PROGS)
 
 clean:
-	rm -rf $(OBJDIR)/*.o $(PROGS)
+	rm -rf $(OBJDIR)/*.o $(PROGS) Movie PPM/*
 
 Coord: $(includeCoord) $(objectCoord)
 	@$(CXX) $(CXXFLAGS) $^ -o Coord
 	@echo "Compilation Coord terminée"
 
+Movie:
+	@$(CXX) $(CXXFLAGS) -std=c++17 -DPARELLEL -O2 src/MakeMovie.cpp -o Movie
+	@echo "Compilation Movie terminée"
 
 Terrain: $(includeCoord) $(objectCoord) $(dependDebug) $(debug) $(depend) $(object) $(includeTerrain) $(objectTerrain)
 	@$(CXX) $(CXXFLAGS) $^ -o $@

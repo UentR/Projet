@@ -35,7 +35,7 @@ class Cell {
         map<int, int> pheromonesSucre;
         map<int, int> pheromonesNid;
         int height;
-        unsigned short int state;               // 6 premier bits = colonie correspondante / 2 derniers = state 
+        int state;               // 6 premier bits = colonie correspondante / 2 derniers = state 
         vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
         int sugarAmount;
         Colonie *nestAbove;

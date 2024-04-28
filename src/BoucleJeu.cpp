@@ -9,6 +9,11 @@
 
 using namespace std;
 
+char* envNbTourLevel = getenv("NbTour");
+bool EmptyNbTourLevel = envNbTourLevel == NULL;
+const int NbTour = (EmptyNbTourLevel) ? 5 : atoi(envNbTourLevel);
+
+
 // Constructeurs
 
 Jeu::Jeu(int W, int H, int nbColonies) : nbTours{0}, Width{W}, Height{H} {
@@ -49,7 +54,7 @@ void Jeu::nextTurn() {
 
 void Jeu::BoucleJeu() {
     writeToDebugFile("BoucleJeu", INFO_DETAIL);
-    while (nbTours < 5) {
+    while (nbTours < NbTour) {
         writeToDebugFile("Tour " + to_string(nbTours), ALL_LOG);
         nextTurn();
         toPPM();
@@ -116,8 +121,6 @@ void Jeu::toText() const {
     writeToDebugFile("toText fin", INFO_DETAIL);
 }
 
-// for (auto const& [key, val] : pheromonesSucre)
-
 void Jeu::toPPM() const {
     writeToDebugFile("toPPM", INFO_DETAIL);
     int i,j;
@@ -131,7 +134,7 @@ void Jeu::toPPM() const {
     // ecriture de l'entete
     fic << "P3" << endl
         << Width*SQUARESIZE << " " << Height*SQUARESIZE << " " << endl
-        << 255 << " " << endl;
+        << 255*2 << " " << endl;
 
     // écriture pixel
     ostringstream line;
@@ -141,36 +144,37 @@ void Jeu::toPPM() const {
     for (int y=0; y<Height; y++) {
         // cout << y
         for (int x=0; x<Width; x++) {
-            Current = terrain->Cells[terrain->toIdx(x, y)];
             Current = terrain->getCell(Coord{x, y});
             if (Current->containsAnt()) {
-                c = Current->getNest();
-                // r = c->getColor()[0];
-                // g = c->getColor()[1];
-                // b = c->getColor()[2];
-                r = 150;
-                g = 150;
-                b = 150;
-
+                // Get first ant that was on the cell
+                Fourmi * ants = Current->toAnt[0];
+                c = ants->colonie;
+                int *Color = c->getColor();
+                r = Color[0]*1.5;
+                g = Color[1]*1.5;
+                b = Color[2]*1.5;
             } else if (Current->containsNest()) {
                 c = Current->getNest();
-                r = c->getColor()[0];
-                g = c->getColor()[1];
-                b = c->getColor()[2];
+                int *Color = c->getColor();
+                r = Color[0]*2;
+                g = Color[1]*2;
+                b = Color[2]*2;
             } else if (Current->containsSugar()) {
-                r = 244;
-                g = 223;
-                b = 177;
+                r = 244*2;
+                g = 223*2;
+                b = 177*2;
             } else if (Current->containsWall()) {
-                r = 0;
-                g = 0;
-                b = 0;
+                r = 40*2;
+                g = 40*2;
+                b = 40*2;
             } else if (Current->containsPheromone()) {
                 Phero = Current->pheromonesSucre;
-                int *color = new int[3];
+                int *color = new int[3]{0, 0, 0};
                 for (auto const& [key, val] : Phero) {
                     for (int i=0; i<3; i++) {
-                        color[i] = val * (key==i);
+                        if (key==i) {
+                            color[i] = val;
+                        }
                     }
                 }
                 r = color[0];
@@ -178,11 +182,12 @@ void Jeu::toPPM() const {
                 b = color[2];
             } else {
                 // Empty
-                r = 255;
-                g = 255;
-                b = 255;
+                r = 0;
+                g = 0;
+                b = 0;
             }
             for (int Size=0; Size<SQUARESIZE; Size++)
+                writeToDebugFile("RGB:" + to_string(r) + " " + to_string(g) + " " + to_string(b), ALL_LOG);
                 line << r << " " << g << " " << b << " ";
         }
         for (int Size=0; Size<SQUARESIZE; Size++)

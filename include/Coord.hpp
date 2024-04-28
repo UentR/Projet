@@ -17,6 +17,8 @@ class Coord{
         int ind_lig;
 
     public:
+        void inverse();
+
         /** @b DONE
          * @brief Constructeurs de Coord avec variables
          */

@@ -7,6 +7,8 @@
 #include <fstream>
 #include <sstream>
 #include <iomanip>
+#include <algorithm>
+#include <execution>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -64,11 +66,14 @@ int main() {
     string path = "PPM";
     vector<string> files;
     listFiles(path, files);
-    for (const auto &file : files) {
-        cout << file << endl;
+    for_each(std::execution::par, files.begin(), files.end(), [](auto&& file) {
+        cout << "Upscale de : " << file << endl;
         string content = readPPM(file);
         writePPM(file, upscalePPM(content));
-    }
+    });
     
+    // Run command in os
+    int t = system("convert -scale 512 -delay 10 PPM/img*.ppm movie.gif");
+
     return 0;
 }
