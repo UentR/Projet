@@ -173,6 +173,7 @@ class Terrain {
         Cell *getCell(Coord c) const;
 
         vector<Cell *> voisin(Coord c, int Rayon) const;
+        vector<Cell *> voisinState(Coord c, int Rayon, int State) const;
 
         /** @b DONE
          * @brief Constructeur de Terrain avec variables

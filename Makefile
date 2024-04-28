@@ -2,13 +2,13 @@
 
 CXX = g++
 # CXXFLAGS = -W -Wall -std=c++11 -O2 -g -Wno-sign-compare -Wno-narrowing
-CXXFLAGS = -W -O3 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
+CXXFLAGS = -W -O2 -DPARELLEL -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
 OBJDIR = object
 INCDIR = include
 vpath %.cpp src
 vpath %.hpp include
 
-PROGS=Jeu
+PROGS=Jeu Movie
 debug = $(addprefix $(OBJDIR)/, Debug.o)
 dependDebug = $(addprefix $(INCDIR)/, Debug.hpp)
 

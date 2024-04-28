@@ -19,9 +19,9 @@ using namespace std;
 #define AttaqueR 2
 
 // Force de portée des fourmis
-#define CapaciteSO 5
-#define CapaciteSG 10
-#define CapaciteSR 5
+#define CapaciteSO 1
+#define CapaciteSG 1
+#define CapaciteSR 1
 
 // Ratio de fourmis
 #define PourcentO 0.75

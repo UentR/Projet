@@ -28,7 +28,7 @@ string readPPM(const string &filename) {
 }
 
 // Upscale a PPM image
-string upscalePPM(const string &content, int FinalScale=512) {
+string upscalePPM(const string &content, int FinalScale=1024) {
     stringstream ss(content);
     string Type, width, height, max, r, g, b;
     ss >> Type >> width >> height >> max;
@@ -73,7 +73,7 @@ int main() {
     });
     
     // Run command in os
-    int t = system("convert -scale 512 -delay 10 PPM/img*.ppm movie.gif");
+    int t = system("convert -scale 1024 -delay 10 PPM/img*.ppm movie.gif");
 
     return 0;
 }

@@ -19,6 +19,9 @@ int Coord::getColonne() const {
     return ind_col;
 }
 
+int Coord::distance(Coord c) const {
+    return abs(ind_col - c.getColonne()) + abs(ind_lig - c.getLigne());
+}
 
 bool Coord::setCoord(int a, int b){
     if (a > TAILLEGRILLE - 1  or a < 0 or b > TAILLEGRILLE - 1 or b < 0){
@@ -34,9 +37,9 @@ bool Coord::setCoord(int a, int b){
 vector<Coord> Coord::voisin(int Rayon) const{
     vector<Coord> voisins;
     int DebX = max(0, ind_col-Rayon);
-    int MaxX = min(TAILLEGRILLE, ind_col+Rayon);
+    int MaxX = min(TAILLEGRILLE-1, ind_col+Rayon);
     int DebY = max(0, ind_lig-Rayon);
-    int MaxY = min(TAILLEGRILLE, ind_lig+Rayon);
+    int MaxY = min(TAILLEGRILLE-1, ind_lig+Rayon);
     for (int x = DebX; x <= MaxX; x++){
         for (int y = DebY; y <= MaxY; y++){
             if (x!=ind_col or y!=ind_lig) {

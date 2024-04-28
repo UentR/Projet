@@ -1,4 +1,8 @@
 #include "Terrain.hpp"
+#include <algorithm>
+
+#include <execution>
+
 
 // cout
 
@@ -51,18 +55,23 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
     int Sugar;
     int H = 0;
     Cell *c;
+    int *Coordo = new int[2];
+    Coord C;
     for (int i=0; i<w*h; i++) {
         // C = toCoord(i);
         Sugar = rand()%500;
         Sugar = max(0, Sugar-490);
         
+        Coordo = toCoord(i);
+        C = Coord{Coordo[0], Coordo[1]};
+
         if (Sugar>0) {
-            c = new Cell{Sugar, 1, H};  // 1 = SUGAR
+            c = new Cell{Sugar*10, 1, H, C};  // 1 = SUGAR
         } else {
             if (rand()%70 == 0) {
-                c = new Cell{0, 3, H};  // 3 = WALL
+                c = new Cell{0, 3, H, C};  // 3 = WALL
             } else {
-                c = new Cell{0, 2, H};  // 2 = EMPTY
+                c = new Cell{0, 2, H, C};  // 2 = EMPTY
             }
         }
 
@@ -107,8 +116,10 @@ Cell *Terrain::getCell(Coord c) const {
 
 void Terrain::updateCell() {
     writeToDebugFile("Entrée updateCell", INFO_DETAIL);
+    // for_each(std::execution::par, Cells.begin(), Cells.end(), [](auto&& c) {
     for (Cell *c : Cells) {
         c->update();
+    // });
     }
     writeToDebugFile("Sortie updateCell", INFO_DETAIL);
 }
@@ -119,16 +130,41 @@ vector<Cell *> Terrain::voisin(Coord c, int Rayon) const {
     int ind_col = c.getColonne();
     int ind_lig = c.getLigne();
     int DebX = max(0, ind_col-Rayon);
-    int MaxX = min(width, ind_col+Rayon);
+    int MaxX = min(width-1, ind_col+Rayon);
     int DebY = max(0, ind_lig-Rayon);
-    int MaxY = min(height, ind_lig+Rayon);
+    int MaxY = min(height-1, ind_lig+Rayon);
     Cell *cell;
     for (int x = DebX; x <= MaxX; x++) {
         for (int y = DebY; y <= MaxY; y++) {
             if (x!=ind_col or y!=ind_lig) {
                 cell = getCell(Coord{x, y});
                 if (cell->isEmpty()) {
-                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ALL_LOG);
+                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ERROR);
+                    voisins.push_back(cell);
+                }
+            }
+        }
+    }
+    writeToDebugFile("Sortie voisin", INFO_DETAIL);
+    return voisins;
+}
+
+vector<Cell *> Terrain::voisinState(Coord c, int Rayon, int State) const {
+    writeToDebugFile("Entrée voisin", INFO_DETAIL);
+    vector<Cell *> voisins;
+    int ind_col = c.getColonne();
+    int ind_lig = c.getLigne();
+    int DebX = max(0, ind_col-Rayon);
+    int MaxX = min(width-1, ind_col+Rayon);
+    int DebY = max(0, ind_lig-Rayon);
+    int MaxY = min(height-1, ind_lig+Rayon);
+    Cell *cell;
+    for (int x = DebX; x <= MaxX; x++) {
+        for (int y = DebY; y <= MaxY; y++) {
+            if (x!=ind_col or y!=ind_lig) {
+                cell = getCell(Coord{x, y});
+                if (cell->state == State) {
+                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ERROR);
                     voisins.push_back(cell);
                 }
             }
@@ -218,7 +254,7 @@ bool Cell::containsSugar() const {
 
 bool Cell::containsNest() const {
     writeToDebugFile("Entrée containsNest", ALL_LOG);
-    return nestAbove != nullptr;
+    return state == 0;
 }
 
 bool Cell::containsNest(int Idx) const {
@@ -233,7 +269,7 @@ bool Cell::isEmpty() const {
 
 bool Cell::containsNest(Colonie *c) const {
     writeToDebugFile("Entrée containsNest", ALL_LOG);
-    return containsNest() && nestAbove == c;
+    return nestAbove == c;
 }
 
 bool Cell::containsPheromone() const {
@@ -251,6 +287,10 @@ bool Cell::containsPheromone(unsigned int a) const {
 
 bool Cell::containsPheromone(int a) const {
     writeToDebugFile("Entrée containsPheromone other", ALL_LOG);
+    if (pheromonesSucre.size() == 0) {
+        writeToDebugFile("Sortie containsPheromone False", ALL_LOG);
+        return false;
+    }
     for (auto const& [key, val] : pheromonesSucre) {
         if (key != a) {
             writeToDebugFile("Sortie containsPheromone True", ALL_LOG);
@@ -278,6 +318,7 @@ bool Cell::setNest(Colonie *c) {
         writeToDebugFile("Sortie setNest False", ALL_LOG);
         return false;
     }
+    state = 0;
     nestAbove = c;
     writeToDebugFile("Sortie setNest True", ALL_LOG);
     return true;

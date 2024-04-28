@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const int TAILLEGRILLE = 1000; 
+const int TAILLEGRILLE = 20; 
 
 class Coord{
     private:
@@ -18,6 +18,8 @@ class Coord{
 
     public:
         void inverse();
+
+        int distance(Coord c) const;
 
         /** @b DONE
          * @brief Constructeurs de Coord avec variables

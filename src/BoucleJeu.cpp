@@ -42,13 +42,13 @@ Jeu::Jeu(int W, int H) : Jeu(2, W, H) {}
 // Methodes
 
 void Jeu::nextTurn() {
-    writeToDebugFile("nextTurn", INFO_DETAIL);
+    writeToDebugFile("nextTurn JEU", ERROR);
     nbTours++;
     for (Colonie *c : colonies) { // Quelle colonie joue la première ?
         c->nextTurn();
     }
     terrain->updateCell();
-    writeToDebugFile("nextTurn fin", INFO_DETAIL);
+    writeToDebugFile("nextTurn fin JEU", ERROR);
 }
 
 
@@ -203,7 +203,7 @@ int main() {
     flushDebug();
     writeToDebugFile("main", INFO_DETAIL);
     srand(time(NULL));
-    Jeu j{50, 50, 3};
+    Jeu j{100, 100, 3};
     j.toPPM();
     j.BoucleJeu();
     return 0;

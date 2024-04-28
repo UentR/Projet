@@ -11,6 +11,7 @@
 #include "Coord.hpp"
 #include "BaseVariables.hpp"
 #include <set>
+#include <algorithm>
 
 using namespace std;
 
@@ -194,6 +195,7 @@ class Colonie {
         vector<Fourmi *> fourmis;
 
         int *getColor();
+        vector<int> distanceNid(vector<Cell *> v) const;
 
         Terrain *getTerrain();
 
