@@ -42,13 +42,13 @@ Jeu::Jeu(int W, int H) : Jeu(2, W, H) {}
 // Methodes
 
 void Jeu::nextTurn() {
-    writeToDebugFile("nextTurn JEU", ERROR);
+    writeToDebugFile("nextTurn JEU", INFO_DETAIL);
     nbTours++;
     for (Colonie *c : colonies) { // Quelle colonie joue la première ?
         c->nextTurn();
     }
     terrain->updateCell();
-    writeToDebugFile("nextTurn fin JEU", ERROR);
+    writeToDebugFile("nextTurn fin JEU", INFO_DETAIL);
 }
 
 

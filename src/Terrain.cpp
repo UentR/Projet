@@ -95,12 +95,12 @@ int Terrain::getHeight() const {
 }
 
 int *Terrain::toCoord(int Idx) const {
-    writeToDebugFile("Entrée toCoord", INFO_DETAIL);
+    writeToDebugFile("Entrée toCoord", ALL_LOG);
     int *Coord = new int[2];
     Coord[0] = Idx%width;
     Coord[1] = Idx/width;
     writeToDebugFile("Coord : " + to_string(Coord[0]) + " " + to_string(Coord[1]), ALL_LOG);
-    writeToDebugFile("Sortie toCoord", INFO_DETAIL);
+    writeToDebugFile("Sortie toCoord", ALL_LOG);
     return Coord;
 }
 
@@ -116,11 +116,11 @@ Cell *Terrain::getCell(Coord c) const {
 
 void Terrain::updateCell() {
     writeToDebugFile("Entrée updateCell", INFO_DETAIL);
-    // for_each(std::execution::par, Cells.begin(), Cells.end(), [](auto&& c) {
-    for (Cell *c : Cells) {
+    for_each(std::execution::par, Cells.begin(), Cells.end(), [](auto&& c) {
+    // for (Cell *c : Cells) {
         c->update();
-    // });
-    }
+    });
+    // }
     writeToDebugFile("Sortie updateCell", INFO_DETAIL);
 }
 
@@ -139,7 +139,7 @@ vector<Cell *> Terrain::voisin(Coord c, int Rayon) const {
             if (x!=ind_col or y!=ind_lig) {
                 cell = getCell(Coord{x, y});
                 if (cell->isEmpty()) {
-                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ERROR);
+                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ALL_LOG);
                     voisins.push_back(cell);
                 }
             }
@@ -164,7 +164,7 @@ vector<Cell *> Terrain::voisinState(Coord c, int Rayon, int State) const {
             if (x!=ind_col or y!=ind_lig) {
                 cell = getCell(Coord{x, y});
                 if (cell->state == State) {
-                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ERROR);
+                    writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ALL_LOG);
                     voisins.push_back(cell);
                 }
             }
@@ -211,15 +211,26 @@ Colonie *Cell::getNest() const {
 
 void Cell::update() {
     writeToDebugFile("Entrée update", ALL_LOG);
+    if (pheromonesSucre.size() == 0) {
+        writeToDebugFile("Sortie update NO UPDATE", ALL_LOG);
+        return;
+    }
+    vector<int> toDelete;
     for (auto const& [key, val] : pheromonesSucre) {
         int newValue = val - REMOVEPHEROMONES;
         if (newValue <= 0) {
-            writeToDebugFile("Pheromone deleted", ALL_LOG);
-            pheromonesSucre.erase(key);
+            writeToDebugFile("Pheromone deleted", ERROR);
+            writeToDebugFile("Size pheromones: " + to_string(pheromonesSucre.size()), ERROR);
+            writeToDebugFile("Key: " + to_string(key), ERROR);
+            writeToDebugFile("Value: " + to_string(pheromonesSucre[key]), ERROR);
+            toDelete.push_back(key);
         } else {
             writeToDebugFile("Pheromone updated", ALL_LOG);
             pheromonesSucre[key] = newValue;
         }
+    }
+    for (int k : toDelete) {
+        pheromonesSucre.erase(k);
     }
     writeToDebugFile("Sortie update", ALL_LOG);
 }

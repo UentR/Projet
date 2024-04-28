@@ -9,7 +9,7 @@
 
 using namespace std;
 
-const int TAILLEGRILLE = 20; 
+const int TAILLEGRILLE = 100; 
 
 class Coord{
     private:

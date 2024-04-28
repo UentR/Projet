@@ -39,7 +39,7 @@ Fourmi::Fourmi() : colonieIdx{-1}, position{0, 0}, vision{1} {
 
 Fourmi::Fourmi(Coord c, int Idx, Colonie *col, Terrain *t) : terrain{t}, colonieIdx{Idx}, position{c}, colonie{col}, vision{1} {
     writeToDebugFile("Constructeur Fourmi params", INFO_DETAIL);
-    writeToDebugFile("Coord construct : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ERROR);
+    writeToDebugFile("Coord construct : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), INFO_DETAIL);
     quantiteSucre = 0;
     isAttacked = 0;
     writeToDebugFile("Constructeur Fourmi Fin", INFO_DETAIL);
@@ -94,7 +94,7 @@ Colonie::Colonie(Terrain *t, Coord c, int i) : terrain{t}, nbFourmis{0}, typeFou
             writeToDebugFile("Cell idx: " + to_string(rd), ALL_LOG);
             Cell *cell = voisins[rd];
             Coord coord = cell->coord; 
-            writeToDebugFile("Coord col constr : " + to_string(coord.getColonne()) + " " + to_string(coord.getLigne()), ERROR);
+            writeToDebugFile("Coord col constr : " + to_string(coord.getColonne()) + " " + to_string(coord.getLigne()), INFO_DETAIL);
             
             if (i == 0) {
                 Ouvriere *o = new Ouvriere{coord, Idx, this, t};
@@ -237,7 +237,7 @@ vector<int> Colonie::distanceNid(vector<Cell *> voisins) const {
 
 void Fourmi::mettrePheromone() const {
     writeToDebugFile("mettrePheromone", INFO_DETAIL);
-    terrain->getCell(position)->pheromonesSucre[colonie->getIdx()] = PosePheromones;
+    terrain->getCell(position)->pheromonesSucre[colonie->getIdx()] = 255;
     writeToDebugFile("mettrePheromone Fin", INFO_DETAIL);
 }
 
@@ -298,9 +298,8 @@ bool Fourmi::deplacer(Cell *cell) {
 vector<Fourmi *> Fourmi::fourmiProche() const {
     writeToDebugFile("fourmiProche", INFO_DETAIL);
     vector<Fourmi *> fourmisProches;
-    vector<Coord> voisins = position.voisin(vision);
-    for (Coord c : voisins) {
-        Cell *Current = terrain->getCell(c);
+    vector<Cell *> voisinsCell = terrain->voisin(position, vision);
+    for (Cell *Current : voisinsCell) {
         for (Fourmi *f : Current->toAnt) {
             if (f->colonie != colonie) {
                 fourmisProches.push_back(f);
@@ -314,8 +313,9 @@ vector<Fourmi *> Fourmi::fourmiProche() const {
 bool Fourmi::auNid() const {
     writeToDebugFile("auNid", INFO_DETAIL);
     vector<Coord> voisins = position.voisin(vision);
-    for (Coord c : voisins) {
-        if (c == colonie->getPosition()) {
+    vector<Cell *> voisinsCell = terrain->voisinState(position, vision, 0);
+    for (Cell *c : voisinsCell) {
+        if (c->nestAbove == colonie) {
             writeToDebugFile("auNid Fin True", INFO_DETAIL);
             return true;
         }
@@ -328,7 +328,7 @@ Cell *Fourmi::procheState(int State) const {
     writeToDebugFile("procheState", INFO_DETAIL);
     writeToDebugFile("State : " + to_string(State), INFO_DETAIL);
     writeToDebugFile("Vision : " + to_string(vision), INFO_DETAIL);
-    writeToDebugFile("Position : " + to_string(position.getColonne()) + " " + to_string(position.getLigne()), ERROR);
+    writeToDebugFile("Position : " + to_string(position.getColonne()) + " " + to_string(position.getLigne()), INFO_DETAIL);
     vector<Cell *> voisins = terrain->voisin(position, vision);
     Cell *Our = terrain->getCell(position);
     for (Cell *Current : voisins) {
@@ -356,7 +356,7 @@ vector<Cell *> Fourmi::pheromonesProches(int Idx) const {
 }
 
 void Fourmi::choixAction() {
-    writeToDebugFile("choixAction Fourmi", ERROR);
+    writeToDebugFile("choixAction Fourmi", ALL_LOG);
     if (quantiteSucre>MinSucre) {
         if (auNid()) { // Done
             // Déposer sucre
@@ -365,14 +365,14 @@ void Fourmi::choixAction() {
         else {
             
             // se déplacer vers le nid
-            writeToDebugFile("choixAction Fourmi Fin NO ACTION sugar amount: " + to_string(quantiteSucre), ERROR);
+            writeToDebugFile("choixAction Fourmi Fin NO ACTION sugar amount: " + to_string(quantiteSucre), ALL_LOG);
             vector<Cell *> voisins = terrain->voisin(position, vision);
             vector<int> Score = colonie->distanceNid(voisins);
             // get the index of the minimum element
             int MinIndex = min_element(Score.begin(), Score.end()) - Score.begin();
             Cell *voisin = voisins[MinIndex];
             Coord c = voisin->coord;
-            writeToDebugFile("Mouv vers nid : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ERROR);
+            writeToDebugFile("Mouv vers nid : " + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ALL_LOG);
             deplacer(voisin);
             mettrePheromone();
 
@@ -385,12 +385,14 @@ void Fourmi::choixAction() {
             Cell *Sucre = Sucres[rand()%Size];
             ramasserSucre(Sucre);
             mettrePheromone();
-        } 
-        else {
+        } else {
             vector<Cell *> pheromones = pheromonesProches(colonieIdx);
             if (pheromones.size() > 0) {
-                // Suivre pheromone
-                deplacer(pheromones[0]);
+                // Suivre pheromone le plus loin du nid
+                vector<int> Score = colonie->distanceNid(pheromones);
+                int MaxIndex = max_element(Score.begin(), Score.end()) - Score.begin();
+                Cell *voisin = pheromones[MaxIndex];
+                deplacer(voisin);
             } else {  // FULL DONE
                 // Se déplacer aléatoirement
                 vector<Cell *> voisins = terrain->voisinState(position, vision, 2);
@@ -398,20 +400,20 @@ void Fourmi::choixAction() {
                 if (Size != 0) {
                     Cell *voisin = voisins[rand()%Size];
                     Coord c = voisin->coord;
-                    writeToDebugFile("Mouv aléatoire vers:" + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ERROR);
+                    writeToDebugFile("Mouv aléatoire vers:" + to_string(c.getColonne()) + " " + to_string(c.getLigne()), ALL_LOG);
                     deplacer(voisin);
                 } else {
-                    writeToDebugFile("choixAction Fourmi Fin NO ACTION", ERROR);
+                    writeToDebugFile("choixAction Fourmi Fin NO ACTION", WARNING);
                 }
             }
         }
     }
-    writeToDebugFile("choixAction Fourmi Fin", ERROR);
+    writeToDebugFile("choixAction Fourmi Fin", ALL_LOG);
 }
 
 
 void Guerriere::choixAction() {
-    writeToDebugFile("choixAction Guerriere", ERROR);
+    writeToDebugFile("choixAction Guerriere", ALL_LOG);
     vector<Fourmi *> fourmisProches = fourmiProche();
     if (fourmisProches.size() > 0) {
         // attaquer
@@ -426,26 +428,24 @@ void Guerriere::choixAction() {
             Fourmi::choixAction();
         }
     }
-    writeToDebugFile("choixAction Guerriere Fin", ERROR);
+    writeToDebugFile("choixAction Guerriere Fin", ALL_LOG);
 }
 
 void Ouvriere::fuir() {
     writeToDebugFile("fuir", INFO_DETAIL);
     vector<Coord> voisins = position.voisin(vision);
-    for (Coord c : voisins) {
-        Cell *Current = terrain->getCell(c);
-        if (Current->isEmpty()) {
-            deplacer(Current);
-            writeToDebugFile("fuir Fin moved", INFO_DETAIL);
-            return;
-        }
+    vector<Cell *> voisinsCell = terrain->voisinState(position, vision, 2);
+    for (Cell *Current : voisinsCell) {
+        deplacer(Current);
+        writeToDebugFile("fuir Fin moved", INFO_DETAIL);
+        return;
     }
     writeToDebugFile("fuir Fin ant blocked", INFO_DETAIL);
 }
 
 
 void Ouvriere::choixAction() {
-    writeToDebugFile("choixAction Ouvriere", ERROR);
+    writeToDebugFile("choixAction Ouvriere", ALL_LOG);
     if (isAttacked > 0) {
         isAttacked--;
         // Fuir
@@ -454,7 +454,7 @@ void Ouvriere::choixAction() {
         // Comportement normal
         Fourmi::choixAction();
     }
-    writeToDebugFile("choixAction Ouvriere Fin", ERROR);
+    writeToDebugFile("choixAction Ouvriere Fin", ALL_LOG);
 }
 
 bool Reproductrice::checkReproduction() {
@@ -469,7 +469,7 @@ bool Reproductrice::checkReproduction() {
 
 
 void Reproductrice::choixAction() {
-    writeToDebugFile("choixAction Reproductrice", ERROR);
+    writeToDebugFile("choixAction Reproductrice", ALL_LOG);
     if (checkReproduction()) {
         // Reproduire
         if (auNid()) {
@@ -481,7 +481,7 @@ void Reproductrice::choixAction() {
         // Comportement Ouvriere
         Ouvriere::choixAction();
     }
-    writeToDebugFile("choixAction Reproductrice Fin", ERROR);
+    writeToDebugFile("choixAction Reproductrice Fin", ALL_LOG);
 }
 
 
