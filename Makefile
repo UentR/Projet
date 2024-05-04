@@ -1,14 +1,17 @@
 .SUFFIXES: .o .cpp
+OBJDIR = object
+INCDIR = include
 
 CXX = g++
 # CXXFLAGS = -W -Wall -std=c++11 -O2 -g -Wno-sign-compare -Wno-narrowing
-CXXFLAGS = -W -O2 -DPARELLEL -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
-OBJDIR = object
-INCDIR = include
+CXXFLAGS = -W -O2 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing -fopenmp -march=native -D_GLIBCXX_PARALLEL -DPARALLEL
+CFLAGS = -W -O3 -w -std=c++17 -Wall -Iinclude -g -Wno-sign-compare -Wno-narrowing
+
 vpath %.cpp src
 vpath %.hpp include
 
-PROGS=Jeu Movie
+PROGS=Jeu Screen Movie 
+
 debug = $(addprefix $(OBJDIR)/, Debug.o)
 dependDebug = $(addprefix $(INCDIR)/, Debug.hpp)
 
@@ -18,27 +21,32 @@ includeCoord = $(addprefix $(INCDIR)/, Coord.hpp )
 objectTerrain = $(addprefix $(OBJDIR)/, Terrain.o )
 includeTerrain = $(addprefix $(INCDIR)/, Terrain.hpp )
 
-objects = $(addprefix $(OBJDIR)/, Terrain.o Fourmi.o Coord.o BaseVariables.o BoucleJeu.o)
+objects = $(addprefix $(OBJDIR)/, Terrain.o Fourmi.o Coord.o BaseVariables.o )
 depend = $(addprefix $(INCDIR)/, Terrain.hpp Fourmi.hpp Coord.hpp BaseVariables.hpp BoucleJeu.hpp)
 
 
-jeu = $(addprefix $(OBJDIR)/,  )
+jeu = $(addprefix $(OBJDIR)/,  BoucleJeu.o)
 jeudepend = $(addprefix $(INCDIR)/, )
 
 demo = $(addprefix $(OBJDIR)/, )
 demodepend = $(addprefix $(INCDIR)/, )
 
+screen = $(addprefix $(OBJDIR)/, BoucleJeuScreen.o )
+
 all: $(PROGS)
 
-clean:
-	rm -rf $(OBJDIR)/*.o $(PROGS) Movie PPM/*
+cleanImg:
+	rm -rf PPM/*
+
+clean: cleanImg
+	rm -rf $(OBJDIR)/*.o $(PROGS) Movie 
 
 Coord: $(includeCoord) $(objectCoord)
 	@$(CXX) $(CXXFLAGS) $^ -o Coord
 	@echo "Compilation Coord terminée"
 
-Movie:
-	@$(CXX) $(CXXFLAGS) -std=c++17 -DPARELLEL -O2 src/MakeMovie.cpp -o Movie
+Movie: object/MakeMovie.o
+	$(CXX) $(CXXFLAGS) $^ -o Movie
 	@echo "Compilation Movie terminée"
 
 Terrain: $(includeCoord) $(objectCoord) $(dependDebug) $(debug) $(depend) $(object) $(includeTerrain) $(objectTerrain)
@@ -49,16 +57,23 @@ Fourmi: $(dependDebug) $(debug) $(includeTerrain) $(objectTerrain) $(depend) $(o
 	@$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
 
-Jeu: $(dependDebug) $(debug) $(depend) $(objects)
-	@$(CXX) $(CXXFLAGS) $^ -o $@
+Jeu: $(dependDebug) $(debug) $(depend) $(objects) $(jeu)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 	@echo "Compilation jeu terminée"
+
+Screen: $(dependDebug) $(debug) $(depend) $(objects) $(screen)
+	$(CXX) $(CXXFLAGS) $^ -o $@ -lsfml-graphics -lsfml-window -lsfml-system
+	@echo "Compilation screen terminée"
 
 LineNumber:
 	@wc -l src/*.cpp include/*.hpp
 
-Demo:  $(debug) $(demo)
-	@$(CXX) $(CXXFLAGS) $^ -o $@
-	@echo "Compilation demo terminée"
+compile:
+	g++ -IsrcSFML/include -c TestSFML.cpp -o TestSFML.o
+
+link:
+	g++ *.o -o TestSFML -LsrcSFML/lib -lsfml-graphics -lsfml-window -lsfml-system
+
 
 $(OBJDIR)/%.o : %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@

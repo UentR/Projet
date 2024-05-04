@@ -6,10 +6,10 @@
 #include <stdexcept>
 #include <vector>
 
+#include "BaseVariables.hpp"
+#include "Debug.hpp"
 
 using namespace std;
-
-const int TAILLEGRILLE = 100; 
 
 class Coord{
     private:

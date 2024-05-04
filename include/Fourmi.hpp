@@ -21,13 +21,14 @@ class Cell;
 
 class Fourmi {
     public:
-        float vie;
+        int IDX;
+        int vie;
         int type;
         int vision;
         Coord position;
-        float quantiteSucre;
-        float capaciteSucre;
-        float forceAttaque;
+        int quantiteSucre;
+        int capaciteSucre;
+        int forceAttaque;
         int isAttacked;
         int colonieIdx;
         Colonie *colonie;
@@ -103,7 +104,7 @@ class Fourmi {
         /** @b DONE
          * @brief Permet à une fourmi de choisir une action de base
          */
-        void choixAction();
+        void choixActionF();
 
         /** @b NOT-DONE
          * @brief Soigne la fourmi
@@ -183,7 +184,7 @@ class Colonie {
     private:
         int nbFourmis;
         array<int, 3> typeFourmis;
-        set<Fourmi *> reproductriceEnAttente;
+        set<Reproductrice *> reproductriceEnAttente;
         Coord position;
         Terrain *terrain;
         int *color;
@@ -192,7 +193,9 @@ class Colonie {
         
         int Idx;
         int quantiteSucre;
-        vector<Fourmi *> fourmis;
+        vector<Ouvriere *> ouvrieres;
+        vector<Guerriere *> guerrieres;
+        vector<Reproductrice *> reproductrices;
 
         int *getColor();
         vector<int> distanceNid(vector<Cell *> v) const;
@@ -203,7 +206,7 @@ class Colonie {
          * @brief Ajoute une fourmi à la liste des fourmis pretes à se reproduire
          * @param Fourmi* Fourmi à ajouter
          */
-        void pretReproduction(Fourmi *f);
+        void pretReproduction(Reproductrice *f);
 
         /** @b DONE
          * @brief Check si la colonie peut se reproduire

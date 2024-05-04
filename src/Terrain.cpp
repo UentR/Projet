@@ -1,6 +1,7 @@
 #include "Terrain.hpp"
 #include <algorithm>
 
+#include <parallel/algorithm>
 #include <execution>
 
 
@@ -53,14 +54,15 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
     // int PerlinNoise;
     // int *C;
     int Sugar;
+    int Wall;
     int H = 0;
     Cell *c;
     int *Coordo = new int[2];
     Coord C;
     for (int i=0; i<w*h; i++) {
         // C = toCoord(i);
-        Sugar = rand()%500;
-        Sugar = max(0, Sugar-490);
+        Sugar = rand()%int(100*(*VARIABLES["MaxSucre"])/(*VARIABLES["ChanceSucre"]));
+        Sugar = -min(Sugar-(*VARIABLES["MaxSucre"]), float(0));
         
         Coordo = toCoord(i);
         C = Coord{Coordo[0], Coordo[1]};
@@ -68,7 +70,7 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
         if (Sugar>0) {
             c = new Cell{Sugar*10, 1, H, C};  // 1 = SUGAR
         } else {
-            if (rand()%70 == 0) {
+            if (rand()%int(100/(*VARIABLES["ChanceMur"])) == 0) {
                 c = new Cell{0, 3, H, C};  // 3 = WALL
             } else {
                 c = new Cell{0, 2, H, C};  // 2 = EMPTY
@@ -76,6 +78,7 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
         }
 
         // cout << &c << endl;
+        writeToDebugFile("Coord terrain : " + to_string(C.getColonne()) + " " + to_string(C.getLigne()), ALL_LOG);
         Cells.push_back(c);
     }
     writeToDebugFile("Sortie Constructeur Terrain", INFO_DETAIL);
@@ -116,7 +119,7 @@ Cell *Terrain::getCell(Coord c) const {
 
 void Terrain::updateCell() {
     writeToDebugFile("Entrée updateCell", INFO_DETAIL);
-    for_each(std::execution::par, Cells.begin(), Cells.end(), [](auto&& c) {
+    __gnu_parallel::for_each(Cells.begin(), Cells.end(), [](auto&& c) {
     // for (Cell *c : Cells) {
         c->update();
     });
@@ -219,10 +222,10 @@ void Cell::update() {
     for (auto const& [key, val] : pheromonesSucre) {
         int newValue = val - REMOVEPHEROMONES;
         if (newValue <= 0) {
-            writeToDebugFile("Pheromone deleted", ERROR);
-            writeToDebugFile("Size pheromones: " + to_string(pheromonesSucre.size()), ERROR);
-            writeToDebugFile("Key: " + to_string(key), ERROR);
-            writeToDebugFile("Value: " + to_string(pheromonesSucre[key]), ERROR);
+            writeToDebugFile("Pheromone deleted", ALL_LOG);
+            writeToDebugFile("Size pheromones: " + to_string(pheromonesSucre.size()), ALL_LOG);
+            writeToDebugFile("Key: " + to_string(key), ALL_LOG);
+            writeToDebugFile("Value: " + to_string(pheromonesSucre[key]), ALL_LOG);
             toDelete.push_back(key);
         } else {
             writeToDebugFile("Pheromone updated", ALL_LOG);
@@ -239,13 +242,16 @@ int Cell::removeSugar(int Amount) {
     writeToDebugFile("Entrée removeSugar", INFO_DETAIL);
     int newValue = sugarAmount - Amount;
     if (newValue <= 0) {
+        int Temp = sugarAmount;
         sugarAmount = 0;
         state = 2;
         writeToDebugFile("Sortie removeSugar convert Nest", INFO_DETAIL);
-        return sugarAmount;
+        writeToDebugFile("Sugar amount <0: " + to_string(sugarAmount), INFO_DETAIL);
+        return Temp;
     } else {
         sugarAmount = newValue;
         writeToDebugFile("Sortie removeSugar: " + to_string(sugarAmount), INFO_DETAIL);
+        writeToDebugFile("Sugar amount >0 : " + to_string(sugarAmount), INFO_DETAIL);
         return Amount;
     }
 }
@@ -264,12 +270,12 @@ bool Cell::containsSugar() const {
 }
 
 bool Cell::containsNest() const {
-    writeToDebugFile("Entrée containsNest", ALL_LOG);
+    writeToDebugFile("Entrée containsNest 0", ALL_LOG);
     return state == 0;
 }
 
 bool Cell::containsNest(int Idx) const {
-    writeToDebugFile("Entrée containsNest", ALL_LOG);
+    writeToDebugFile("Entrée containsNest 1", ALL_LOG);
     return containsNest() && nestAbove->getIdx() == Idx;
 }
 
@@ -279,7 +285,7 @@ bool Cell::isEmpty() const {
 }
 
 bool Cell::containsNest(Colonie *c) const {
-    writeToDebugFile("Entrée containsNest", ALL_LOG);
+    writeToDebugFile("Entrée containsNest 2", ALL_LOG);
     return nestAbove == c;
 }
 
@@ -314,7 +320,6 @@ bool Cell::containsPheromone(int a) const {
 
 bool Cell::containsAnt() const {
     writeToDebugFile("Entrée containsAnt", ALL_LOG);
-    // return false;
     return toAnt.size() != 0;
 }
 

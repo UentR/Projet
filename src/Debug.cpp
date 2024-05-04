@@ -5,12 +5,20 @@ bool EmptyDebugLevel = envDebugLevel == NULL;
 const DebugLevel LEVEL =
     (EmptyDebugLevel) ? (DebugLevel)0 : (DebugLevel)atoi((envDebugLevel));
 
+
+
+#include <filesystem>
+namespace fs = std::filesystem;
+
+int FileName=0;
+
 // Use this function to log most commun words
 void writeToDebugFile(string logInfo, int level) {
   if (level > LEVEL) {
     return;
   }
   ofstream debugFile;
+
   debugFile.open("Debug.txt", ios::app);
   time_t now = time(0);
   if (debugFile.is_open()) {
@@ -24,19 +32,12 @@ void writeToDebugFile(string logInfo, int level) {
   }
 }
 
-void writeToStatsFile(string logInfo) {
-  ofstream debugFile;
-  debugFile.open("Text/WordsIA.txt", ios::app);
-  time_t now = time(0);
-  if (debugFile.is_open()) {
-    debugFile << logInfo << endl;
-    debugFile.close();
-  } else {
-    cout << "Unable to open debug file." << endl;
-  }
-}
-
 void flushDebug() {
+  // count number of Debug file
+  // for (const auto &entry : fs::directory_iterator("Debug")) {
+  //   FileName++;
+  // }
+
   ofstream debugFile;
   debugFile.open("Debug.txt", ios::trunc);
   debugFile.close();

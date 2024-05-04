@@ -9,9 +9,6 @@
 
 using namespace std;
 
-char* envNbTourLevel = getenv("NbTour");
-bool EmptyNbTourLevel = envNbTourLevel == NULL;
-const int NbTour = (EmptyNbTourLevel) ? 5 : atoi(envNbTourLevel);
 
 
 // Constructeurs
@@ -54,7 +51,8 @@ void Jeu::nextTurn() {
 
 void Jeu::BoucleJeu() {
     writeToDebugFile("BoucleJeu", INFO_DETAIL);
-    while (nbTours < NbTour) {
+    while (nbTours < *VARIABLES["NbTour"]) {
+        cout << "Tour " << nbTours << endl;
         writeToDebugFile("Tour " + to_string(nbTours), ALL_LOG);
         nextTurn();
         toPPM();
@@ -122,7 +120,7 @@ void Jeu::toText() const {
 }
 
 void Jeu::toPPM() const {
-    writeToDebugFile("toPPM", INFO_DETAIL);
+    writeToDebugFile("toPPM", WARNING);
     int i,j;
     int r,g,b;
     ostringstream filename;
@@ -133,41 +131,48 @@ void Jeu::toPPM() const {
     ofstream fic(filename.str(), ios::out | ios::trunc);
     // ecriture de l'entete
     fic << "P3" << endl
-        << Width*SQUARESIZE << " " << Height*SQUARESIZE << " " << endl
+        << Width*(*VARIABLES["SQUARESIZE"]) << " " << Height*(*VARIABLES["SQUARESIZE"]) << " " << endl
         << 255*2 << " " << endl;
 
     // écriture pixel
     ostringstream line;
+    ostringstream All;
     Colonie *c;
     Cell *Current;
     map<int, int> Phero;
+    Fourmi *ant;
     for (int y=0; y<Height; y++) {
         // cout << y
         for (int x=0; x<Width; x++) {
             Current = terrain->getCell(Coord{x, y});
             if (Current->containsAnt()) {
+                writeToDebugFile("Ant", INFO_DETAIL);
                 // Get first ant that was on the cell
-                Fourmi * ants = Current->toAnt[0];
-                c = ants->colonie;
+                ant = Current->toAnt[0];
+                c = ant->colonie;
                 int *Color = c->getColor();
                 r = Color[0]*1.5;
                 g = Color[1]*1.5;
                 b = Color[2]*1.5;
             } else if (Current->containsNest()) {
+                writeToDebugFile("Nest", INFO_DETAIL);
                 c = Current->getNest();
                 int *Color = c->getColor();
                 r = Color[0]*2;
                 g = Color[1]*2;
                 b = Color[2]*2;
             } else if (Current->containsSugar()) {
+                writeToDebugFile("Sugar", INFO_DETAIL);
                 r = 244*2;
                 g = 223*2;
                 b = 177*2;
             } else if (Current->containsWall()) {
+                writeToDebugFile("Wall", INFO_DETAIL);
                 r = 40*2;
                 g = 40*2;
                 b = 40*2;
             } else if (Current->containsPheromone()) {
+                writeToDebugFile("Pheromone", INFO_DETAIL);
                 Phero = Current->pheromonesSucre;
                 int *color = new int[3]{0, 0, 0};
                 for (auto const& [key, val] : Phero) {
@@ -181,30 +186,36 @@ void Jeu::toPPM() const {
                 g = color[1];
                 b = color[2];
             } else {
+                writeToDebugFile("Empty", INFO_DETAIL);
                 // Empty
                 r = 0;
                 g = 0;
                 b = 0;
             }
-            for (int Size=0; Size<SQUARESIZE; Size++)
+            for (int Size=0; Size<*VARIABLES["SQUARESIZE"]; Size++) {
                 writeToDebugFile("RGB:" + to_string(r) + " " + to_string(g) + " " + to_string(b), ALL_LOG);
                 line << r << " " << g << " " << b << " ";
+            }
         }
-        for (int Size=0; Size<SQUARESIZE; Size++)
-            fic << line.str() << endl;
+        writeToDebugFile("line", INFO_DETAIL);
+        for (int Size=0; Size<*VARIABLES["SQUARESIZE"]; Size++)
+            All << line.str() << endl;
         line.str("");
     }
     // fermeture du fichier
+    fic << All.str();
     fic.close();
-    writeToDebugFile("toPPM fin", INFO_DETAIL);
+    writeToDebugFile("toPPM fin", WARNING);
 }
 
 int main() {
+    SetupVar();
     flushDebug();
     writeToDebugFile("main", INFO_DETAIL);
     srand(time(NULL));
-    Jeu j{100, 100, 3};
+    Jeu j{*VARIABLES["TAILLEGRILLE"], *VARIABLES["TAILLEGRILLE"], 3};
     j.toPPM();
     j.BoucleJeu();
+    writeToDebugFile("main fin", ERROR);
     return 0;
 }

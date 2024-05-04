@@ -1,7 +1,17 @@
+#ifndef __BOUCLEJEU_HPP
+#define __BOUCLEJEU_HPP
+
 #include "BaseVariables.hpp"
 #include "Fourmi.hpp"
 #include "Terrain.hpp"
 #include "Coord.hpp"
+#include <SFML/Graphics.hpp>
+
+// Variables globales
+char* envNbTourLevel = getenv("NbTour");
+bool EmptyNbTourLevel = envNbTourLevel == NULL;
+const int NbTour = (EmptyNbTourLevel) ? 5 : atoi(envNbTourLevel);
+
 
 class Jeu {
     private:
@@ -51,6 +61,7 @@ class Jeu {
         /** @b NOT-DONE
          * @brief Affiche le terrain via un écran
          */
-        void toScreen() const;
-
+        void BoucleJeuScreen();
 };
+
+#endif

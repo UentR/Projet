@@ -1,5 +1,4 @@
 // list all the files in the directory
-
 #include <iostream>
 #include <string>
 #include <vector>
@@ -8,6 +7,7 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+#include <parallel/algorithm>
 #include <execution>
 
 using namespace std;
@@ -28,7 +28,7 @@ string readPPM(const string &filename) {
 }
 
 // Upscale a PPM image
-string upscalePPM(const string &content, int FinalScale=1024) {
+string upscalePPM(const string &content, int FinalScale=512) {
     stringstream ss(content);
     string Type, width, height, max, r, g, b;
     ss >> Type >> width >> height >> max;
@@ -66,14 +66,15 @@ int main() {
     string path = "PPM";
     vector<string> files;
     listFiles(path, files);
-    for_each(std::execution::par, files.begin(), files.end(), [](auto&& file) {
+    cout << "Found " << files.size() << " files" << endl;
+    __gnu_parallel::for_each(files.begin(), files.end(), [](auto&& file) {
         cout << "Upscale de : " << file << endl;
         string content = readPPM(file);
-        writePPM(file, upscalePPM(content));
+        writePPM(file, upscalePPM(content, 256));
     });
     
     // Run command in os
-    int t = system("convert -scale 1024 -delay 10 PPM/img*.ppm movie.gif");
+    int t = system("convert -scale 256 -delay 10 PPM/img*.ppm movie.gif");
 
     return 0;
 }

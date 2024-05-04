@@ -4,7 +4,8 @@ using namespace std;
 
 
 Coord::Coord(int a, int b) : ind_lig{b}, ind_col{a} {
-    if (a > TAILLEGRILLE - 1  or a < 0 or b > TAILLEGRILLE - 1 or b < 0){
+    writeToDebugFile("Coord construct : " + to_string(a) + " " + to_string(b), ALL_LOG);
+    if (a > *VARIABLES["TAILLEGRILLE"] - 1  or a < 0 or b > *VARIABLES["TAILLEGRILLE"] - 1 or b < 0){
         throw runtime_error("Coord qui ne sont pas dans le tableau");
     }
 }
@@ -24,7 +25,7 @@ int Coord::distance(Coord c) const {
 }
 
 bool Coord::setCoord(int a, int b){
-    if (a > TAILLEGRILLE - 1  or a < 0 or b > TAILLEGRILLE - 1 or b < 0){
+    if (a > *VARIABLES["TAILLEGRILLE"] - 1  or a < 0 or b > *VARIABLES["TAILLEGRILLE"] - 1 or b < 0){
         throw runtime_error("Coord qui ne sont pas dans le tableau");
         return false;
     }
@@ -37,9 +38,9 @@ bool Coord::setCoord(int a, int b){
 vector<Coord> Coord::voisin(int Rayon) const{
     vector<Coord> voisins;
     int DebX = max(0, ind_col-Rayon);
-    int MaxX = min(TAILLEGRILLE-1, ind_col+Rayon);
+    int MaxX = min(*VARIABLES["TAILLEGRILLE"]-1, float(ind_col+Rayon));
     int DebY = max(0, ind_lig-Rayon);
-    int MaxY = min(TAILLEGRILLE-1, ind_lig+Rayon);
+    int MaxY = min(*VARIABLES["TAILLEGRILLE"]-1, float(ind_lig+Rayon));
     for (int x = DebX; x <= MaxX; x++){
         for (int y = DebY; y <= MaxY; y++){
             if (x!=ind_col or y!=ind_lig) {
