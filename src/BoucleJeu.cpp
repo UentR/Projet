@@ -3,9 +3,10 @@
 #include <iomanip>      // pour setfill, setw
 #include <sstream>      // pour ostringstream
 #include <fstream>
-
+#include <unistd.h>
 #include <cstdlib>
 #include <ctime>
+#include <chrono>
 
 using namespace std;
 
@@ -49,13 +50,32 @@ void Jeu::nextTurn() {
 }
 
 
-void Jeu::BoucleJeu() {
+void Jeu::BoucleJeu(int type) {
     writeToDebugFile("BoucleJeu", INFO_DETAIL);
+    void (Jeu::*funcRepr)() const;
+    auto start = chrono::high_resolution_clock::now();
+    if (type == 1) {
+        std::cout << "Simulation en mode texte" << std::endl;
+        toText();
+        start = chrono::high_resolution_clock::now();
+        funcRepr = &Jeu::toText;
+    } else {
+        std::cout << "Simulation en mode image" << std::endl;
+        toPPM();
+        funcRepr = &Jeu::toPPM;
+    }
+
+    
     while (nbTours < *VARIABLES["NbTour"]) {
-        cout << "Tour " << nbTours << endl;
+        std::cout << "Tour " << nbTours << std::endl;
         writeToDebugFile("Tour " + to_string(nbTours), ALL_LOG);
         nextTurn();
-        toPPM();
+        while ((type==1) && (chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count() < 1000./(*VARIABLES["FPS"]))) {
+            // Wait
+            usleep(1000);
+        }
+        (this->*funcRepr)();
+        start = chrono::high_resolution_clock::now();
     }
     writeToDebugFile("BoucleJeu fin", INFO_DETAIL);
 }
@@ -66,7 +86,7 @@ void Jeu::BoucleJeu() {
 void repeatChar(int Nbr, char c) {
     writeToDebugFile("repeatChar char", ALL_LOG);
     for (int i=0; i<Nbr; i++) {
-        cout << c;
+        std::cout << c;
     }
     writeToDebugFile("repeatChar char fin", ALL_LOG);
 }
@@ -74,48 +94,50 @@ void repeatChar(int Nbr, char c) {
 void repeatChar(int Nbr, string c) {
     writeToDebugFile("repeatChar string", ALL_LOG);
     for (int i=0; i<Nbr; i++) {
-        cout << c;
+        std::cout << c;
     }
     writeToDebugFile("repeatChar string fin", ALL_LOG);
 }
 
 void Jeu::toText() const {
     writeToDebugFile("toText", INFO_DETAIL);
+    // Clear screen
+    system("clear");
     int LineSize = Width;
-    cout << UpRightC;
+    std::cout << UpRightC;
     repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TUp);
-    cout << Horizontal+Horizontal+Horizontal+UpLeftC;
+    std::cout << Horizontal+Horizontal+Horizontal+UpLeftC;
 
     int Idx=0;
     Cell *Current;
     for (int y=0; y<Height; y++) {
-        cout << endl << Vertical;
+        std::cout << std::endl << Vertical;
         for (int x=0; x<Width; x++) {
-            Current = terrain->Cells[Idx];
+            Current = terrain->getCell(Idx);
             if (Current->containsAnt()) {
-                cout << " " << Triangle << " ";
+                std::cout << " " << Triangle << " ";
             } else if (Current->containsNest()) {
-                cout << " " << Carre << " ";
+                std::cout << " " << Carre << " ";
             } else if (Current->containsSugar()) {
-                cout << " " << Circle << " ";
+                std::cout << " " << Circle << " ";
             } else if (Current->containsWall()) {
-                cout << Full << Full << Full;
+                std::cout << Full << Full << Full;
             } else {
-                cout << "   ";
+                std::cout << "   ";
             }
-            cout << Vertical;
+            std::cout << Vertical;
             
             Idx++;
         }
-        cout << endl;
-        cout << TLeft;
+        std::cout << std::endl;
+        std::cout << TLeft;
         repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+Cross);
-        cout << Horizontal+Horizontal+Horizontal+TRight;
+        std::cout << Horizontal+Horizontal+Horizontal+TRight;
     }
-    cout << '\r';
-    cout << DownRightC;
+    std::cout << '\r';
+    std::cout << DownRightC;
     repeatChar(LineSize-1, Horizontal+Horizontal+Horizontal+TDown);
-    cout << Horizontal+Horizontal+Horizontal+DownLeftC << endl;
+    std::cout << Horizontal+Horizontal+Horizontal+DownLeftC << std::endl;
     writeToDebugFile("toText fin", INFO_DETAIL);
 }
 
@@ -126,13 +148,13 @@ void Jeu::toPPM() const {
     ostringstream filename;
     // creation d'un nouveau nom de fichier de la forme img347.ppm
     filename << "PPM/img" << setfill('0') << setw(3) << nbTours << ".ppm";
-    cout << "Ecriture dans le fichier : " << filename.str() << endl;
+    std::cout << "Ecriture dans le fichier : " << filename.str() << std::endl;
     // ouverture du fichier
     ofstream fic(filename.str(), ios::out | ios::trunc);
     // ecriture de l'entete
-    fic << "P3" << endl
-        << Width*(*VARIABLES["SQUARESIZE"]) << " " << Height*(*VARIABLES["SQUARESIZE"]) << " " << endl
-        << 255*2 << " " << endl;
+    fic << "P3" << std::endl
+        << Width*(*VARIABLES["SQUARESIZE"]) << " " << Height*(*VARIABLES["SQUARESIZE"]) << " " << std::endl
+        << 255*2 << " " << std::endl;
 
     // écriture pixel
     ostringstream line;
@@ -142,21 +164,21 @@ void Jeu::toPPM() const {
     map<int, int> Phero;
     Fourmi *ant;
     for (int y=0; y<Height; y++) {
-        // cout << y
+        // std::cout << y
         for (int x=0; x<Width; x++) {
             Current = terrain->getCell(Coord{x, y});
             if (Current->containsAnt()) {
                 writeToDebugFile("Ant", INFO_DETAIL);
                 // Get first ant that was on the cell
-                ant = Current->toAnt[0];
-                c = ant->colonie;
+                ant = Current->getToAnt()[0];
+                c = ant->getColonie();
                 int *Color = c->getColor();
                 r = Color[0]*1.5;
                 g = Color[1]*1.5;
                 b = Color[2]*1.5;
             } else if (Current->containsNest()) {
                 writeToDebugFile("Nest", INFO_DETAIL);
-                c = Current->getNest();
+                c = Current->getNestAbove();
                 int *Color = c->getColor();
                 r = Color[0]*2;
                 g = Color[1]*2;
@@ -173,7 +195,7 @@ void Jeu::toPPM() const {
                 b = 40*2;
             } else if (Current->containsPheromone()) {
                 writeToDebugFile("Pheromone", INFO_DETAIL);
-                Phero = Current->pheromonesSucre;
+                Phero = Current->getPheromonesSucre();
                 int *color = new int[3]{0, 0, 0};
                 for (auto const& [key, val] : Phero) {
                     for (int i=0; i<3; i++) {
@@ -199,7 +221,7 @@ void Jeu::toPPM() const {
         }
         writeToDebugFile("line", INFO_DETAIL);
         for (int Size=0; Size<*VARIABLES["SQUARESIZE"]; Size++)
-            All << line.str() << endl;
+            All << line.str() << std::endl;
         line.str("");
     }
     // fermeture du fichier
@@ -213,9 +235,14 @@ int main() {
     flushDebug();
     writeToDebugFile("main", INFO_DETAIL);
     srand(time(NULL));
-    Jeu j{*VARIABLES["TAILLEGRILLE"], *VARIABLES["TAILLEGRILLE"], 3};
-    j.toPPM();
-    j.BoucleJeu();
+    Jeu j{*VARIABLES["TAILLEGRILLE"], *VARIABLES["TAILLEGRILLE"], *VARIABLES["NB_COLONIES"]};
+    
+    std::cout << "Initialisation du jeu" << std::endl;
+    std::cout << "Type de simulation :" << std::endl;
+    int type;
+    cin >> type;
+    j.BoucleJeu(type);
+
     writeToDebugFile("main fin", ERROR);
     return 0;
 }

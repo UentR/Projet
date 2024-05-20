@@ -2,6 +2,7 @@
 
 #include <cstdlib>
 #include <time.h>
+#include <chrono>
 
 using namespace std;
 
@@ -41,7 +42,7 @@ void Jeu::BoucleJeuScreen() {
     sf::RenderWindow window(sf::VideoMode(1000, 1000), "Projet Fourmis", sf::Style::Titlebar | sf::Style::Close);
     int Size = 1000/(*VARIABLES["TAILLEGRILLE"]);
 
-    window.setFramerateLimit(60);
+    // window.setFramerateLimit(60);
     window.setPosition(sf::Vector2i(1000, 400));
 
     sf::RectangleShape MurDessin(sf::Vector2f(Size, Size));
@@ -63,15 +64,11 @@ void Jeu::BoucleJeuScreen() {
         ColoniesColor.push_back(ColonieDessin);
     }
 
-    int FPS = 10;
-
-    int now = time(0);
-
-    cout << now << endl;
-
     Cell *Current;
     sf::RectangleShape CurrentShape(sf::Vector2f(Size, Size));
     Fourmi *ant;
+
+    auto start = chrono::high_resolution_clock::now();
 
     while (window.isOpen()) {
         sf::Event event;
@@ -88,13 +85,13 @@ void Jeu::BoucleJeuScreen() {
                 if (Current->containsAnt()) {
                     writeToDebugFile("Ant", INFO_DETAIL);
                     // Get first ant that was on the cell
-                    ant = Current->toAnt[0];
-                    Colonie *c = ant->colonie;
+                    ant = Current->getToAnt()[0];
+                    Colonie *c = ant->getColonie();
                     int Idx = c->getIdx();
                     CurrentShape = ColoniesColor[Idx];
                 } else if (Current->containsNest()) {
                     writeToDebugFile("Nest", INFO_DETAIL);
-                    int Idx = Current->getNest()->getIdx();
+                    int Idx = Current->getNestAbove()->getIdx();
                     CurrentShape = ColoniesColor[Idx];
                 } else if (Current->containsSugar()) {
                     writeToDebugFile("Sugar", INFO_DETAIL);
@@ -103,8 +100,8 @@ void Jeu::BoucleJeuScreen() {
                     writeToDebugFile("Wall", INFO_DETAIL);
                     CurrentShape = MurDessin;
                 } else if (Current->containsPheromone()) {
-                    writeToDebugFile("Pheromone", INFO_DETAIL);
-                    map<int, int> Phero = Current->pheromonesSucre;
+                    writeToDebugFile("Pheromone", ERROR);
+                    map<int, int> Phero = Current->getPheromonesSucre();
                     int *color = new int[3]{0, 0, 0};
                     for (auto const& [key, val] : Phero) {
                         for (int i=0; i<3; i++) {
@@ -128,7 +125,11 @@ void Jeu::BoucleJeuScreen() {
 
         nextTurn();
 
-        now = time(0);
+        while (chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count() < 1000./(*VARIABLES["FPS"])) {
+            // Wait
+            usleep(1000);
+        }
+        start = chrono::high_resolution_clock::now();
     }
     writeToDebugFile("BoucleJeu fin", ERROR);
 }

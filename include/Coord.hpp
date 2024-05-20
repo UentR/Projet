@@ -17,8 +17,9 @@ class Coord{
         int ind_lig;
 
     public:
-        void inverse();
-
+        /** @b DONE
+         * @brief Calcul de la distance de Manhattan entre deux coordonnees
+        */
         int distance(Coord c) const;
 
         /** @b DONE
@@ -46,6 +47,11 @@ class Coord{
          */
         int getColonne() const;
 
+        /** @b DONE
+         * @brief Ensemble des coordonnees voisines d'une coordonnee dans un certain rayon
+         * @param int : le rayon de la recherche
+         * @return vector<Coord> : vecteur des coordonnees voisines
+         */
         vector<Coord> voisin(int Rayon) const;
 };
 

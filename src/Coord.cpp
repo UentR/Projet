@@ -123,11 +123,6 @@ Coord EnsembleCoord::ieme(int n) const{
     return Grille[n];
 }
 
-void Coord::inverse() {
-    int temp = ind_lig;
-    ind_lig = ind_col;
-    ind_col = temp;
-}
 
 // int main() {
 //     Coord c{1, 2};

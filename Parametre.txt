@@ -8,7 +8,7 @@
 // Vie des fourmis
 # VieO 10
 # VieG 15
-# VieR 10
+# VieR 7
 
 // Attaque des fourmis
 # AttaqueO 3
@@ -16,8 +16,8 @@
 # AttaqueR 2
 
 // Force de portée des fourmis
-# CapaciteSO 1
-# CapaciteSG 1
+# CapaciteSO 2
+# CapaciteSG 5
 # CapaciteSR 1
 
 // Ratio de fourmis
@@ -26,14 +26,14 @@
 # PourcentR 0.10
 
 // Nombre initial de fourmis
-# NBO 15
+# NBO 5
 # NBG 3
-# NBR 2
+# NBR 3
 
 # PosePheromones 255
 
-# MinSucre 50
-# UseSucre 25
+# MinSucre 1
+# UseSucre 1
 
 # SQUARESIZE 1
 
@@ -41,4 +41,6 @@
 
 # NbTour 200
 
-# TAILLEGRILLE 10
+# TAILLEGRILLE 50
+# NB_COLONIES 3
+# FPS 10

@@ -9,15 +9,15 @@
 
 ostream &operator<<(ostream &out, Cell c) {
     writeToDebugFile("Entrée operator<< Cell", INFO_DETAIL);
-    out << "Sugar amount : " << c.sugarAmount << ", state : " << c.state << ", Ant above : ";
-    for (Fourmi *f : c.toAnt) {
+    out << "Sugar amount : " << c.getSugarAmount() << ", state : " << c.getState() << ", Ant above : ";
+    for (Fourmi *f : c.getToAnt()) {
         out << f << " - ";
     }
     out << "Pheromones : ";
-    for (auto const& [key, val] : c.pheromonesSucre) {
+    for (auto const& [key, val] : c.getPheromonesSucre()) {
         out << " " << key << " - " << val << " | ";
     }
-    out << "Nest above : " << c.nestAbove;
+    out << "Nest above : " << c.getNestAbove();
     writeToDebugFile("Sortie operator<< Cell", INFO_DETAIL);
     return out;
 }
@@ -27,7 +27,7 @@ ostream &operator<<(ostream &out, Terrain t) {
     int w = t.getWidth();
     out << "Width: " << w << ", Height: " << t.getHeight() << endl;
     int I = 0;
-    for (Cell *c : t.Cells) {
+    for (Cell *c : t.getCells()) {
         int *C = t.toCoord(I);
         out << "(" << C[0] << ", " << C[1] << ")" << '\t' << *c << endl;
         I++;
@@ -39,7 +39,6 @@ ostream &operator<<(ostream &out, Terrain t) {
 
 // Constructeur 
 Cell::Cell(int Sugar, int State, int Height, Coord Coordo) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromonesSucre{}, height{Height}, nestAbove{nullptr}, coord{Coordo} {}
-Cell::Cell(int Sugar, int State, int Height) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromonesSucre{}, height{Height}, nestAbove{nullptr} {}
 
 Cell::Cell(int Sugar, int State, int Height, Coord Coordo, Colonie *ptrCol) : sugarAmount{Sugar}, state{State}, toAnt{}, pheromonesSucre{}, height{Height}, nestAbove{ptrCol}, coord{Coordo} {}
 
@@ -50,9 +49,6 @@ Terrain::Terrain(int w, int h) : width{w}, height{h} {
     writeToDebugFile("Entrée Constructeur Terrain", INFO_DETAIL);
     srand(time(0));
     Cells = {};
-    // int state;
-    // int PerlinNoise;
-    // int *C;
     int Sugar;
     int Wall;
     int H = 0;
@@ -112,9 +108,19 @@ int Terrain::toIdx(int x, int y) const {
     return y*width + x;
 }
 
+vector<Cell *> Terrain::getCells() const {
+    writeToDebugFile("Entrée getCells", ALL_LOG);
+    return Cells;
+}
+
 Cell *Terrain::getCell(Coord c) const {
     writeToDebugFile("Entrée getCell", ALL_LOG);
     return Cells[toIdx(c.getColonne(), c.getLigne())];
+}
+
+Cell *Terrain::getCell(int c) const {
+    writeToDebugFile("Entrée toIdx", ALL_LOG);
+    return Cells[c];
 }
 
 void Terrain::updateCell() {
@@ -166,7 +172,7 @@ vector<Cell *> Terrain::voisinState(Coord c, int Rayon, int State) const {
         for (int y = DebY; y <= MaxY; y++) {
             if (x!=ind_col or y!=ind_lig) {
                 cell = getCell(Coord{x, y});
-                if (cell->state == State) {
+                if (cell->getState() == State) {
                     writeToDebugFile("Coord terrain : " + to_string(x) + " " + to_string(y), ALL_LOG);
                     voisins.push_back(cell);
                 }
@@ -179,11 +185,10 @@ vector<Cell *> Terrain::voisinState(Coord c, int Rayon, int State) const {
 
 // Methode Cell
 
-void Cell::waitForNest() {
-    writeToDebugFile("Entrée waitForNest", INFO_DETAIL);
-    state = 0;
-    writeToDebugFile("Sortie waitForNest", INFO_DETAIL);
-
+bool Cell::setPheromonesSucre(int Idx, int Value) {
+    writeToDebugFile("Entrée setPheromonesSucre", INFO_DETAIL);
+    pheromonesSucre[Idx] = Value;
+    return true;
 }
 
 void Cell::removeAnt(Fourmi *f) {
@@ -205,11 +210,6 @@ void Cell::addAnt(Fourmi *f) {
     writeToDebugFile("Fourmi ajoutée nb:" + to_string(toAnt.size()), ALL_LOG);
     toAnt.push_back(f);
     writeToDebugFile("Sortie addAnt", INFO_DETAIL);
-}
-
-Colonie *Cell::getNest() const {
-    writeToDebugFile("Entrée getNest", ALL_LOG);
-    return nestAbove;
 }
 
 void Cell::update() {
@@ -256,13 +256,39 @@ int Cell::removeSugar(int Amount) {
     }
 }
 
-unsigned short int Cell::getState() const {
+
+// Methode state cell
+
+Coord Cell::getCoord() const {
+    writeToDebugFile("Entrée getCoord", ALL_LOG);
+    return coord;
+}
+
+map<int, int> Cell::getPheromonesSucre() const {
+    writeToDebugFile("Entrée getPheromonesSucre", ALL_LOG);
+    return pheromonesSucre;
+}
+
+int Cell::getSugarAmount() const {
+    writeToDebugFile("Entrée getSugarAmount", ALL_LOG);
+    return sugarAmount;
+}
+
+vector<Fourmi *> Cell::getToAnt() const {
+    writeToDebugFile("Entrée getToAnt", ALL_LOG);
+    return toAnt;
+}
+
+
+int Cell::getState() const {
     writeToDebugFile("Entrée getState", ALL_LOG);
     return state;
 }
 
-
-// Methode state cell
+Colonie *Cell::getNestAbove() const {
+    writeToDebugFile("Entrée containsSugar", ALL_LOG);
+    return nestAbove;
+}
 
 bool Cell::containsSugar() const {
     writeToDebugFile("Entrée containsSugar", ALL_LOG);

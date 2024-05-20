@@ -20,29 +20,23 @@ class Terrain;
 class Cell;
 
 class Fourmi {
-    public:
-        int IDX;
+    protected :
         int vie;
         int type;
         int vision;
-        Coord position;
         int quantiteSucre;
         int capaciteSucre;
         int forceAttaque;
+        Coord position;
         int isAttacked;
         int colonieIdx;
         Colonie *colonie;
         Terrain *terrain;
-        
+
         /** @b DONE
          * @brief Check si la fourmi est au nid
          */
         bool auNid() const;
-
-        /** @b NOT-DONE
-         * @brief Check si la fourmi est sur du sucre
-         */
-        bool auSucre() const;
 
         /** @b DONE
          * @brief Check si la fourmi est proche d'un état donné
@@ -101,15 +95,18 @@ class Fourmi {
          */
         vector<Fourmi *> fourmiProche() const;
 
+    public:
+        int getType() const;
+        int getVie() const;
+        int getQuantiteSucre() const;
+        Coord getPosition() const;
+        Colonie *getColonie() const;
+
+
         /** @b DONE
          * @brief Permet à une fourmi de choisir une action de base
          */
-        void choixActionF();
-
-        /** @b NOT-DONE
-         * @brief Soigne la fourmi
-         */
-        void soigner();
+        virtual void choixAction();
 
         /** @b DONE
          * @brief Constructeur des fourmis avec variables
@@ -137,12 +134,13 @@ class Guerriere : public Fourmi {
 };
 
 class Ouvriere : public Fourmi {
-    public:
-        /** @b ~DONE
-         * @brief Fuit
+    protected:
+        /** @b DONE
+         * @brief Fuit de manière aléatoire
          */
         void fuir();
 
+    public:
         /** @b DONE
          * @brief Choix de l'action de l'ouvrière
          */
@@ -155,17 +153,13 @@ class Ouvriere : public Fourmi {
 };
 
 class Reproductrice : public Ouvriere {
-    public:
+    protected:
         /** @b DONE
          * @brief Check si la colonie peut se reproduire
          */
         bool checkReproduction();
 
-        /** @b NOT-DONE
-         * @brief La fourmi se rapproche du nid
-         */
-        void rentrerNid(); 
-        
+    public:
         /** @b DONE
          * @brief Choix de l'action de la reproductrice
          */
@@ -189,29 +183,58 @@ class Colonie {
         Terrain *terrain;
         int *color;
 
-    public:
-        
         int Idx;
         int quantiteSucre;
-        vector<Ouvriere *> ouvrieres;
-        vector<Guerriere *> guerrieres;
-        vector<Reproductrice *> reproductrices;
+        vector<Fourmi *> Fourmis;
 
+        /** @b DONE
+         * @brief Check si la colonie peut se reproduire
+         */
+        bool CheckReproduction();
+
+        /** @b DONE
+         * @brief Produit une fourmi du premier type ayant un ratio trop faible
+         * @return int : Le type de fourmi produite
+         */
+        int produireFourmis();
+
+    public:
+        /** @b DONE
+         * @brief getter de la quantité de sucre
+        */
+        int getQuantiteSucre() const;
+
+        vector<Fourmi *> getFourmis();
+
+        /** @b DONE
+         * @brief Ajoute une quantité de sucre à la colonie
+         * @param int Quantité de sucre à ajouter
+         * @return bool : Si le sucre a été ajouté
+         */
+        bool addQuantiteSucre(int q);
+
+        /** @b DONE
+         * @brief getter de la couleur associée à la colonie
+         */
         int *getColor();
-        vector<int> distanceNid(vector<Cell *> v) const;
 
+        /** @b DONE
+         * @brief getter du terrain associé à la colonie
+         */
         Terrain *getTerrain();
+
+        /** @b DONE
+         * @brief Score des cellules en fonction de leur distance au nid
+         * @param vector<Cell *> : Liste des cellules à scorer
+         * @return vector<int> Liste des scores
+         */
+        vector<int> distanceNid(vector<Cell *> v) const;
 
         /** @b DONE
          * @brief Ajoute une fourmi à la liste des fourmis pretes à se reproduire
          * @param Fourmi* Fourmi à ajouter
          */
         void pretReproduction(Reproductrice *f);
-
-        /** @b DONE
-         * @brief Check si la colonie peut se reproduire
-         */
-        bool CheckReproduction();
 
         /** @b DONE
          * @brief Supprime une fourmie de la colonie
@@ -234,11 +257,8 @@ class Colonie {
         Coord getPosition() const;
 
         /** @b DONE
-         * @brief Produit une fourmi du premier type ayant un ratio trop faible
-         * @return int : Le type de fourmi produite
+         * @brief Permet à la colonie de jouer un tour
          */
-        int produireFourmis();
-
         void nextTurn();
 
         /** @b DONE

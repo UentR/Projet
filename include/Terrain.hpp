@@ -19,12 +19,6 @@
 
 using namespace std;
 
-
-#define HWall 0.1
-#define HEmpty 0
-#define HSugar 0.8
-#define HNest 1
-
 #define REMOVEPHEROMONES 5
 
 class Colonie;
@@ -32,24 +26,79 @@ class Fourmi;
 class Coord;
 
 class Cell {
-    public:
+    private:
         map<int, int> pheromonesSucre;
-        map<int, int> pheromonesNid;
+        // map<int, int> pheromonesNid;
         int height;
-        int state;               // 6 premier bits = colonie correspondante / 2 derniers = state 
-        vector<Fourmi *> toAnt;                 //                                         / 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
+        int state;                  // 0 = Nid, 1 = Sucre, 2 = Vide, 3 = Mur
+        vector<Fourmi *> toAnt;
         int sugarAmount;
         Colonie *nestAbove;
         Coord coord;
 
-        unsigned short int getState() const;
+    public:
+        bool setPheromonesSucre(int Idx, int value);
 
-        void waitForNest();
+        /** @b DONE
+         * @brief getter the Sugar Amount object
+         * 
+         * @return int 
+         */
+        int getSugarAmount() const;
 
+        /**
+         * @brief Get the To Ant object
+         * 
+         * @return vector<Fourmi *> 
+         */
+        vector<Fourmi *> getToAnt() const;
+
+        /**
+         * @brief Get the State object
+         * 
+         * @return int 
+         */
+        int getState() const;
+
+        /**
+         * @brief Get the Coord object
+         * 
+         * @return Coord 
+         */
+        Coord getCoord() const;
+
+        /**
+         * @brief Get the Nest Above object
+         * 
+         * @return Colonie* 
+         */
+        Colonie *getNestAbove() const;
+
+        /**
+         * @brief Get the Pheromones Sucre object
+         * 
+         * @return map<int, int> 
+         */
+        map<int, int> getPheromonesSucre() const;
+
+        /**
+         * @brief Enlever une fourmi d'une case
+         * @param Fourmi* Fourmi à enlever
+         */
         void removeAnt(Fourmi *f);
+
+        /**
+         * @brief Ajouter une fourmi à une case
+         * @param Fourmi* Fourmi à ajouter
+         */
         void addAnt(Fourmi *f);
 
-        Colonie *getNest() const;
+        /**
+         * @brief Set the Nest object
+         * 
+         * @param Colonie* : Colonie à ajouter
+         * @return Réussite de l'opération 
+         */
         bool setNest(Colonie *c);
 
         /** @b DONE
@@ -62,7 +111,7 @@ class Cell {
          */
         bool containsNest() const;
 
-        /** @b NOT-DONE
+        /** @b DONE
          * @param Colonie Colonie à vérifier
          * @return true si la cellule contient un nid de la colonie donnée
          */
@@ -123,8 +172,6 @@ class Cell {
          */
         Cell(int Sugar, int State, int Height, Coord Coordo);
 
-        Cell(int Sugar, int State, int Height);
-
         /** @b DONE
          * @brief Constructeur de Cell avec variables
          */
@@ -141,11 +188,10 @@ class Cell {
 class Terrain {
     private:
         const int width;
-        const int height;        
+        const int height;
+        vector<Cell *> Cells;
     
     public:
-        vector<Cell *> Cells;
-
         /** @b DONE
          * @param int Coordonnée X
          * @param int Coordonnée Y
@@ -169,11 +215,42 @@ class Terrain {
          */
         int *toCoord(int Idx) const;
 
+        /** @b DONE
+         * @brief Update les phéromones des cellules
+         */
         void updateCell();
 
+        /** @b DONE
+         * @return vector<Cell *> Ensemble des cellules
+         */
+        vector<Cell *> getCells() const;
+
+        /** @b DONE
+         * @param Coord Coordonnées de la cellule
+         * @return Cell* Cellule associée
+         */
         Cell *getCell(Coord c) const;
 
+        /** @b DONE
+         * @param int Index de la cellule
+         * @return Cell* Cellule associée
+         */
+        Cell *getCell(int Idx) const;
+
+        /** @b DONE
+         * @brief Trouve les voisins d'une cellule
+         * @param Coord Coordonnées de la cellule
+         * @param int Quantité de sucre à ajouter
+         * @return Voisin de la cellule
+         */
         vector<Cell *> voisin(Coord c, int Rayon) const;
+
+        /** @b DONE
+         * @brief Trouve les voisins d'une cellule avec un état donné
+         * @param Coord Coordonnées de la cellule
+         * @param int Quantité de sucre à ajouter
+         * @return Voisin de la cellule avec un état donné
+         */
         vector<Cell *> voisinState(Coord c, int Rayon, int State) const;
 
         /** @b DONE

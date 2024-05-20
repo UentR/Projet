@@ -15,6 +15,12 @@ const int NbTour = (EmptyNbTourLevel) ? 5 : atoi(envNbTourLevel);
 
 class Jeu {
     private:
+        Terrain *terrain;
+        vector<Colonie *> colonies;
+        int nbTours;
+        int Width, Height;
+
+
         const string UpLeftC = "\U00002513";
         const string UpRightC = "\U0000250F";
         const string DownLeftC = "\U0000251B";
@@ -37,15 +43,20 @@ class Jeu {
         const string Full = "\U00002588";
     
     public:
-        Terrain *terrain;
-        vector<Colonie *> colonies;
-        int nbTours;
-        int Width, Height;
-
+        /** @b DONE
+         * @brief Initialise le terrain de jeu
+         */
         Jeu(int W, int H,int nbColonies);
         Jeu(int W, int H);
 
-        void BoucleJeu();
+        /** @b DONE
+         * @brief Gere la boucle de jeu
+         */
+        void BoucleJeu(int type);
+
+        /** @b DONE
+         * @brief Permet de passer d'un état au suivant
+         */
         void nextTurn();
 
         /** @b DONE
@@ -53,12 +64,12 @@ class Jeu {
          */
         void toText() const;
 
-        /** @b NOT-DONE
+        /** @b DONE
          * @brief Affiche le terrain en PPM
          */
         void toPPM() const;
 
-        /** @b NOT-DONE
+        /** @b DONE
          * @brief Affiche le terrain via un écran
          */
         void BoucleJeuScreen();
